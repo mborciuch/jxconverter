@@ -19,7 +19,6 @@ public class JsonObjectWithNodeListPrinter implements Printer {
         JsonConverter.decrementCurrentIndentation();
         stringBuilder.append(CommonUtils.NEW_LINE).append(CommonUtils.EMPTY_SPACE.repeat(JsonConverter.getCurrentIndentation()));
         stringBuilder.append(JSON_CLOSE_SIGN);
-        stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
         return stringBuilder.toString();
     }
 

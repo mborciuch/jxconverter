@@ -12,17 +12,20 @@ import java.util.regex.Pattern;
 
 public class JsonConverter extends AbstractConverter {
 
-    private static String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
-    private static String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
-    private static String ELEMENT_VALUE = ">([^<>/]*?)</";
-    private static String ELEMENT_VALUE_EMPTY_ONE_TAG = "(.*\\s/>)?";
-    private static String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
-    private static String ELEMENT_EMPTY_VALUE_NESTED = "(/><[^/])";
-    private static String ELEMENT_EMPTY_VALUE_NESTED_2 = "(<(?:.*?)/>)((<.*?/?>)(.*?)(</.*?>))";
-    private static String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
+    private static final String XML_ONE_LINE = ">[<>/]*<";
+    private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
+    private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
+    private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
+    private static final String ELEMENT_VALUE_EMPTY_ONE_TAG = "(.*\\s/>)?";
+    private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
+    private static final String ELEMENT_EMPTY_VALUE_NESTED = "(/><[^/])";
+    private static final String ELEMENT_EMPTY_VALUE_NESTED_2 = "(<(?:.*?)/>)((<.*?/?>)(.*?)(</.*?>))";
+    private static final String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
+    private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s=\\s\"(.*?)\"";
+    private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
 
-    private static String ATTRIBUTE_SIGN = "@";
-    private static String VALUE_SIGN = "#";
+    private static final String ATTRIBUTE_SIGN = "@";
+    private static final String VALUE_SIGN = "#";
 
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
@@ -52,7 +55,7 @@ public class JsonConverter extends AbstractConverter {
         boolean isInputOneLineXML = isInputOneLineXML(input);
 
         if (isInputOneLineXML) {
-            Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES);
+            Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES_ONE_LINE_XML);
             Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
             if (possibleAttributes.isPresent()) {
                 elementName = getElementName(input, ELEMENT_NAME_WITH_ATTRIBUTES);
@@ -198,11 +201,10 @@ public class JsonConverter extends AbstractConverter {
     }
 
     private boolean isInputOneLineXML(String input) {
-        //Pattern elementNamePattern = Pattern.compile(">([^<>/]*?)</ || <([^<>]*?)/?>\"");
-        Pattern elementNamePattern = Pattern.compile(">[<>/]*<");
+        Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
         if (elementNameMatcher.find()) {
-            elementNameMatcher.usePattern(Pattern.compile("></"));
+            elementNameMatcher.usePattern(Pattern.compile("[></]"));
             return !elementNameMatcher.find();
         } else {
             return true;
@@ -215,17 +217,8 @@ public class JsonConverter extends AbstractConverter {
         Matcher attributesMatcher = attributesPattern.matcher(input);
         String[] values;
         if (attributesMatcher.find()) {
-//            if(input.indexOf(attributesMatcher.group()) == 0){
-//                attributes = new HashMap<>();
-//                attributesMatcher.reset();
-//                while (attributesMatcher.find()) {
-//                    values = attributesMatcher.group().split("=");
-//                    attributes.put(values[0].trim(), values[1].replace("\"", "").trim());
-//                }
-//                return Optional.of(attributes);
-//            }
             attributesMatcher.reset();
-            attributes = new HashMap<>();
+            attributes = new LinkedHashMap<>();
             while (attributesMatcher.find()){
                 values = attributesMatcher.group().split("=");
                 attributes.put(prepareAttributeName(values[0].trim()), values[1].replace("\"", "").trim());

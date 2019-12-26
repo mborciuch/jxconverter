@@ -9,7 +9,6 @@ public class JsonNode extends Node {
 
     private Printer printer;
 
-
     public JsonNode(String elementName, Printer printer) {
         this.elementName = elementName;
         this.printer = printer;
@@ -19,8 +18,6 @@ public class JsonNode extends Node {
         this.elementName = elementName;
         this.printer = printer;
     }
-
-
 
     @Override
     public String getNodeName() {
