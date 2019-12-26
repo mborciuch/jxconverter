@@ -12,14 +12,11 @@ import java.util.regex.Pattern;
 
 public class JsonConverter extends AbstractConverter {
 
-    private static final String XML_ONE_LINE = ">[<>/]*<";
+    private static final String XML_ONE_LINE = ">[<>/]*</";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
     private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
-    private static final String ELEMENT_VALUE_EMPTY_ONE_TAG = "(.*\\s/>)?";
     private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
-    private static final String ELEMENT_EMPTY_VALUE_NESTED = "(/><[^/])";
-    private static final String ELEMENT_EMPTY_VALUE_NESTED_2 = "(<(?:.*?)/>)((<.*?/?>)(.*?)(</.*?>))";
     private static final String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
     private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s=\\s\"(.*?)\"";
     private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
@@ -53,7 +50,6 @@ public class JsonConverter extends AbstractConverter {
         JsonObject jsonObject;
         String elementName;
         boolean isInputOneLineXML = isInputOneLineXML(input);
-
         if (isInputOneLineXML) {
             Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES_ONE_LINE_XML);
             Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
@@ -163,9 +159,6 @@ public class JsonConverter extends AbstractConverter {
                     int cutInputLength = input.length() - newInput.length();
                     String extractedValue = openingTag.toString().concat(extractElement(newInput, elementName).concat(closingTag.toString()));
                     allOneLines.add(extractedValue);
-                    //TODO
-                    //Inner node with the same name as outer node
-                    //Inner11
                     int lastIndex = cutInputLength + extractedValue.length();
                     oneLineMatcher.region(lastIndex, input.length());
                 } else {
@@ -174,7 +167,6 @@ public class JsonConverter extends AbstractConverter {
                 oneLineMatcher.usePattern(emptyNodePattern);
             }
         }
-
         return allOneLines;
     }
 
@@ -200,15 +192,17 @@ public class JsonConverter extends AbstractConverter {
         return Optional.empty();
     }
 
+    //@JavaDoc Special case: one line xml with empty value : elementName></elementName>
+    //Additional check in If statement. 3 derivatives from length of "></"
     private boolean isInputOneLineXML(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
         if (elementNameMatcher.find()) {
-            elementNameMatcher.usePattern(Pattern.compile("[></]"));
-            return !elementNameMatcher.find();
-        } else {
-            return true;
+            int index = input.indexOf(elementNameMatcher.group());
+            //indexOf ></
+            return index + 3 == input.length() - index;
         }
+        return true;
     }
 
     private Optional<Map<String, String>> getElementAttributes(String input, String regexp) {

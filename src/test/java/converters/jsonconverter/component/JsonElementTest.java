@@ -15,17 +15,22 @@ public class JsonElementTest {
         jsonConverter  =  new JsonConverter();
     }
 
-
-
     @Test
-    public void buildElement_NotEmptyElement() {
+    public void buildElementWithValue() {
         String xmlElement  =  "<host>127.0.0.1</host>";
         String jsonValue  =  jsonConverter.convert(xmlElement);
         assertEquals("{\"host\" : \"127.0.0.1\"}", jsonValue);
      }
 
     @Test
-    public void buildElement_EmptyElement(){
+    public void buildEmptyElement(){
+        String xmlElement  =  "<success></success>";
+        String jsonValue  =  jsonConverter.convert(xmlElement);
+        assertEquals("{\"success\" : \"\"}", jsonValue);
+    }
+
+    @Test
+    public void buildEmptyElementSingleTag(){
         String xmlElement  =  "<success/>";
         String jsonValue  =  jsonConverter.convert(xmlElement);
         assertEquals("{\"success\" : null}", jsonValue);
@@ -56,7 +61,6 @@ public class JsonElementTest {
                 "}", jsonValue);
     }
 
-
     @Test
     public void buildElement_EmptyElement_WithAttributes(){
         String xmlElement  =  "<person rate = \"1\" name = \"Torvalds\"/>";
@@ -68,19 +72,6 @@ public class JsonElementTest {
                 "        \"#person\" : null\n" +
                 "    }\n" +
                 "}", jsonValue);
-    }
-
-    @Test
-    public void listWithTheSameElementName(){
-        String input = "<element>\n" +
-                "   <deep deepattr = \"deepvalue\">\n" +
-                "       <element1>1</element1>\n" +
-                "       <element2>2</element2>\n" +
-                "       <element3>3</element3>\n" +
-                "   </deep>\n" +
-                "</element>\n" ;
-        String result = jsonConverter.convert(input);
-        System.out.println(result);
     }
 
     @Test
@@ -142,6 +133,19 @@ public class JsonElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}", jsonValue);
+    }
+
+    @Test
+    public void listWithTheSameElementName(){
+        String input = "<element>\n" +
+                "   <deep deepattr = \"deepvalue\">\n" +
+                "       <element1>1</element1>\n" +
+                "       <element2>2</element2>\n" +
+                "       <element3>3</element3>\n" +
+                "   </deep>\n" +
+                "</element>\n" ;
+        String result = jsonConverter.convert(input);
+        System.out.println(result);
     }
 
     @Test
@@ -356,7 +360,5 @@ public class JsonElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}", jsonValue);
-
-
     }
 }
