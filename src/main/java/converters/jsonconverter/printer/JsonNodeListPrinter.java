@@ -10,7 +10,7 @@ import converters.jsonconverter.JsonConverter;
 
 import static converters.jsonconverter.JsonUtils.*;
 
-public class JsonNodePrinter implements Printer {
+public class JsonNodeListPrinter implements Printer {
     @Override
     public String prepareElement(AbstractNode abstractNode) {
         NodeList jsonElementList = (NodeList) abstractNode;

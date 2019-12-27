@@ -6,7 +6,7 @@ import converters.components.Printer;
 import static converters.jsonconverter.JsonUtils.JSON_CLOSE_SIGN;
 import static converters.jsonconverter.JsonUtils.JSON_OPEN_SIGN;
 
-public class JsonObjectWithNodePrinter implements Printer {
+public class JsonComponentNodeWithNodePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {

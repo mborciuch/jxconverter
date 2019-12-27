@@ -1,5 +1,7 @@
 package converters.jsonconverter.component;
 
+import converters.factories.JsonPrinterFactory;
+import converters.factories.NodeFactory;
 import converters.jsonconverter.JsonConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,9 @@ public class JsonElementTest {
 
     @BeforeAll
     public static void prepareConverter(){
-        jsonConverter  =  new JsonConverter();
+        JsonPrinterFactory jsonNodePrinterFactory = new JsonPrinterFactory();
+        NodeFactory nodeFactory = new NodeFactory(jsonNodePrinterFactory);
+        jsonConverter  =  new JsonConverter(nodeFactory);
     }
 
     @Test

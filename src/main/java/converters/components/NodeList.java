@@ -13,7 +13,6 @@ public class NodeList extends AbstractNode implements Iterable<AbstractNode> {
 
     private Printer printer;
 
-    private boolean isEqualNodeList = false;
 
     public NodeList(String elementName, Printer printer) {
         this.elementName = elementName;
@@ -46,14 +45,6 @@ public class NodeList extends AbstractNode implements Iterable<AbstractNode> {
 
     public void addAbstractElement(AbstractNode abstractNode) {
         list.add(abstractNode);
-    }
-
-    public boolean isEqualNodeList() {
-        return isEqualNodeList;
-    }
-
-    public void setEqualNodeList(boolean equalNodeList) {
-        isEqualNodeList = equalNodeList;
     }
 
     @Override

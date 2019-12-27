@@ -7,7 +7,7 @@ import converters.components.Printer;
 import static converters.jsonconverter.JsonUtils.JSON_COLON;
 import static converters.jsonconverter.JsonUtils.JSON_QUOTE;
 
-public class JsonNodeEmptyPrinter implements Printer {
+public class JsonNodeWithNoValuePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {

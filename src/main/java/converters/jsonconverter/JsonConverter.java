@@ -4,7 +4,7 @@ import converters.AbstractConverter;
 import converters.components.ComponentNode;
 import converters.components.Node;
 import converters.components.NodeList;
-
+import converters.factories.NodeFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -27,6 +27,10 @@ public class JsonConverter extends AbstractConverter {
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
 
+    public JsonConverter(NodeFactory nodeFactory) {
+        super(nodeFactory);
+    }
+
     public static int getCurrentIndentation() {
         return currentIndentation;
     }
@@ -47,57 +51,57 @@ public class JsonConverter extends AbstractConverter {
     private ComponentNode prepareStructure(String input) {
         ComponentNode componentNode;
         String elementName;
-        boolean isInputOneLineXML = isInputOneLineXML(input);
+        boolean isInputOneLineXML = isInputOneLine(input);
         if (isInputOneLineXML) {
             Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES_ONE_LINE_XML);
             Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
             if (possibleAttributes.isPresent()) {
                 elementName = getElementName(input, ELEMENT_NAME_WITH_ATTRIBUTES);
-                NodeList nodeList = JsonNodeFactory.getJsonNodeList(elementName);
+                NodeList nodeList = getNodeFactory().getNodeList(elementName);
                 for (Map.Entry<String, String> entry : possibleAttributes.get().entrySet()) {
-                    Node node = JsonNodeFactory.getJsonNodeWithValue(entry.getKey(), entry.getValue());
+                    Node node = getNodeFactory().getNodeWithValue(entry.getKey(), entry.getValue());
                     nodeList.addAbstractElement(node);
                 }
-                componentNode = JsonNodeFactory.getJsonObjectWithNodeList();
+                componentNode = getNodeFactory().getComponentNodeWithNodeList();
                 if (oneLineValue.isPresent()) {
-                    Node node = JsonNodeFactory.getJsonNodeWithValue(prepareValueName(elementName), oneLineValue.get());
+                    Node node = getNodeFactory().getNodeWithValue(prepareValueName(elementName), oneLineValue.get());
                     nodeList.addAbstractElement(node);
                     componentNode.setAbstractNode(nodeList);
                 } else {
-                    Node node = JsonNodeFactory.getJsonNodeEmpty(prepareValueName(elementName));
+                    Node node = getNodeFactory().getNodeWithNoValue(prepareValueName(elementName));
                     nodeList.addAbstractElement(node);
                     componentNode.setAbstractNode(nodeList);
                 }
 
             } else {
                 elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-                componentNode = JsonNodeFactory.getJsonObjectWithNode();
+                componentNode = getNodeFactory().getComponentNodeWithNode();
                 if (oneLineValue.isPresent()) {
-                    Node node = JsonNodeFactory.getJsonNodeWithValue(elementName, oneLineValue.get());
+                    Node node = getNodeFactory().getNodeWithValue(elementName, oneLineValue.get());
                     componentNode.setAbstractNode(node);
                 } else {
-                    Node node = JsonNodeFactory.getJsonNodeEmpty(elementName);
+                    Node node = getNodeFactory().getNodeWithNoValue(elementName);
                     componentNode.setAbstractNode(node);
                 }
             }
         } else {
             elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
             boolean isInputWithList = isInputWithList(input, ELEMENT_NAME_WITH_ATTRIBUTES, elementName);
-            NodeList jsonNodeList;
+            NodeList nodeList;
             if (isInputWithList) {
-                jsonNodeList = JsonNodeFactory.getJsonEqualNodeList(elementName);
+                nodeList = getNodeFactory().getEqualNodeList(elementName);
             } else {
-                jsonNodeList = JsonNodeFactory.getJsonNodeList(elementName);
+                nodeList = getNodeFactory().getNodeList(elementName);
             }
-            componentNode = JsonNodeFactory.getJsonObjectWithNodeList();
+            componentNode = getNodeFactory().getComponentNodeWithNodeList();
             componentNode.setNodeName(elementName);
             String extractedValue = extractElement(input, elementName);
             List<String> allOneLines = new ArrayList<>();
             findAllLines(extractedValue, allOneLines);
-            componentNode.setAbstractNode(jsonNodeList);
+            componentNode.setAbstractNode(nodeList);
             for (String element : allOneLines) {
                 ComponentNode newJsonObject = prepareStructure(element);
-                jsonNodeList.addAbstractElement(newJsonObject.getAbstractNode());
+                nodeList.addAbstractElement(newJsonObject.getAbstractNode());
             }
         }
         return componentNode;
@@ -191,7 +195,7 @@ public class JsonConverter extends AbstractConverter {
 
     //@JavaDoc Special case: one line xml with empty value : elementName></elementName>
     //Additional check in If statement. 3 derivatives from length of "></"
-    private boolean isInputOneLineXML(String input) {
+    private boolean isInputOneLine(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
         if (elementNameMatcher.find()) {

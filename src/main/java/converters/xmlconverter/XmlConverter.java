@@ -1,9 +1,9 @@
 //package converters.xmlconverter;
 //
 //import converters.AbstractConverter;
+//import converters.components.ComponentNode;
 //import converters.components.Node;
-//import converters.xmlconverter.components.XmlNode;
-//import converters.xmlconverter.components.XmlObject;
+//
 //
 //import java.util.HashMap;
 //import java.util.Map;
@@ -18,13 +18,10 @@
 //
 //    @Override
 //    public String convert(String input) {
-//        input = trimInput(input);
-//        XmlObject xmlObject = new XmlObject();
-//        prepareStructure(input, xmlObject);
-//        return xmlObject.printXml();
+//        return prepareStructure(trimInput(input)).print();
 //    }
 //
-//    private void prepareStructure(String input, XmlObject xmlObject) {
+//    private ComponentNode prepareStructure(String input) {
 //        String elementName;
 //        boolean isJsonOneLine = isJsonOneLine(input);
 //
