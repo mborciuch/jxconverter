@@ -1,32 +1,32 @@
 package converters.jsonconverter;
 
-import converters.jsonconverter.component.JsonNode;
-import converters.jsonconverter.component.JsonNodeList;
-import converters.jsonconverter.component.JsonObject;
+import converters.components.ComponentNode;
+import converters.components.Node;
+import converters.components.NodeList;
 
 public class JsonNodeFactory {
 
-    public static JsonObject getJsonObjectWithNode(){
-        return new JsonObject(JsonNodePrinterFactory.getJsonObjectWithNodePrinter());
+    public static ComponentNode getJsonObjectWithNode(){
+        return new ComponentNode(JsonNodePrinterFactory.getJsonObjectWithNodePrinter());
     }
 
-    public static JsonObject getJsonObjectWithNodeList(){
-        return new JsonObject(JsonNodePrinterFactory.getJsonObjectWithNodeListPrinter());
+    public static ComponentNode getJsonObjectWithNodeList(){
+        return new ComponentNode(JsonNodePrinterFactory.getJsonObjectWithNodeListPrinter());
     }
 
-    public static JsonNode getJsonNodeEmpty(String elementName){
-        return new JsonNode(elementName, JsonNodePrinterFactory.getJsonNodeEmptyPrinter());
+    public static Node getJsonNodeEmpty(String elementName){
+        return new Node(elementName, JsonNodePrinterFactory.getJsonNodeEmptyPrinter());
     }
-    public static JsonNode getJsonNodeWithValue(String elementName, Object value){
-        return new JsonNode(elementName, value,  JsonNodePrinterFactory.getJsonNodeWithValuePrinter());
-    }
-
-    public static JsonNodeList getJsonNodeList(String elementName){
-        return new JsonNodeList(elementName, JsonNodePrinterFactory.getJsonNodeListPrinter());
+    public static Node getJsonNodeWithValue(String elementName, Object value){
+        return new Node(elementName, JsonNodePrinterFactory.getJsonNodeWithValuePrinter(),  value);
     }
 
-    public static JsonNodeList getJsonEqualNodeList(String elementName){
-        JsonNodeList result  = getJsonNodeList(elementName);
+    public static NodeList getJsonNodeList(String elementName){
+        return new NodeList(elementName, JsonNodePrinterFactory.getJsonNodeListPrinter());
+    }
+
+    public static NodeList getJsonEqualNodeList(String elementName){
+        NodeList result  = getJsonNodeList(elementName);
         result.setEqualNodeList(true);
         return result;
     }

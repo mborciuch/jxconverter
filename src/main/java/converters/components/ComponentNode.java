@@ -1,9 +1,6 @@
-package converters.jsonconverter.component;
+package converters.components;
 
-import converters.components.AbstractNode;
-import converters.components.Printer;
-
-public class JsonObject extends AbstractNode {
+public class ComponentNode extends AbstractNode {
 
     private String elementName;
 
@@ -11,12 +8,8 @@ public class JsonObject extends AbstractNode {
 
     private Printer printer;
 
-    public JsonObject(Printer printer) {
+    public ComponentNode(Printer printer) {
         this.printer = printer;
-    }
-
-    public void setAbstractNode(AbstractNode abstractNode) {
-        this.abstractNode = abstractNode;
     }
 
     @Override
@@ -29,6 +22,10 @@ public class JsonObject extends AbstractNode {
         this.elementName = nodeName;
     }
 
+    public void setAbstractNode(AbstractNode abstractNode) {
+        this.abstractNode = abstractNode;
+    }
+
     public AbstractNode getAbstractNode() {
         return abstractNode;
     }
@@ -37,5 +34,4 @@ public class JsonObject extends AbstractNode {
     public String print() {
         return printer.prepareElement(abstractNode);
     }
-
 }

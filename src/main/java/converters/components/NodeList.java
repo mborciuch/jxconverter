@@ -5,17 +5,35 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class NodeList extends AbstractNode implements Iterable<AbstractNode> {
+public class NodeList extends AbstractNode implements Iterable<AbstractNode> {
+
+    private String elementName;
 
     private List<AbstractNode> list;
 
-    public NodeList() {
+    private Printer printer;
+
+    private boolean isEqualNodeList = false;
+
+    public NodeList(String elementName, Printer printer) {
+        this.elementName = elementName;
+        this.printer = printer;
         this.list = new ArrayList<>();
     }
 
     @Override
     public Iterator<AbstractNode> iterator() {
         return list.iterator();
+    }
+
+    @Override
+    public String getNodeName() {
+        return this.elementName;
+    }
+
+    @Override
+    public void setNodeName(String nodeName) {
+        this.elementName = nodeName;
     }
 
     public List<AbstractNode> getList() {
@@ -28,6 +46,19 @@ public abstract class NodeList extends AbstractNode implements Iterable<Abstract
 
     public void addAbstractElement(AbstractNode abstractNode) {
         list.add(abstractNode);
+    }
+
+    public boolean isEqualNodeList() {
+        return isEqualNodeList;
+    }
+
+    public void setEqualNodeList(boolean equalNodeList) {
+        isEqualNodeList = equalNodeList;
+    }
+
+    @Override
+    public String print() {
+        return printer.prepareElement(this);
     }
 }
 

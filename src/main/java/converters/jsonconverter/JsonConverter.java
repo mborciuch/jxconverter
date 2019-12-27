@@ -1,10 +1,10 @@
 package converters.jsonconverter;
 
 import converters.AbstractConverter;
+import converters.components.ComponentNode;
+import converters.components.Node;
 import converters.components.NodeList;
-import converters.jsonconverter.component.JsonNode;
-import converters.jsonconverter.component.JsonNodeList;
-import converters.jsonconverter.component.JsonObject;
+
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -41,13 +41,11 @@ public class JsonConverter extends AbstractConverter {
 
     @Override
     public String convert(String input) {
-        input = trimInput(input);
-        JsonObject jsonObject = prepareStructure(input);
-        return jsonObject.print();
+        return prepareStructure(trimInput(input)).print();
     }
 
-    private JsonObject prepareStructure(String input) {
-        JsonObject jsonObject;
+    private ComponentNode prepareStructure(String input) {
+        ComponentNode componentNode;
         String elementName;
         boolean isInputOneLineXML = isInputOneLineXML(input);
         if (isInputOneLineXML) {
@@ -55,55 +53,54 @@ public class JsonConverter extends AbstractConverter {
             Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
             if (possibleAttributes.isPresent()) {
                 elementName = getElementName(input, ELEMENT_NAME_WITH_ATTRIBUTES);
-                NodeList jsonElementList = JsonNodeFactory.getJsonNodeList(elementName);
+                NodeList nodeList = JsonNodeFactory.getJsonNodeList(elementName);
                 for (Map.Entry<String, String> entry : possibleAttributes.get().entrySet()) {
-                    JsonNode node = JsonNodeFactory.getJsonNodeWithValue(entry.getKey(), entry.getValue());
-                    jsonElementList.addAbstractElement(node);
+                    Node node = JsonNodeFactory.getJsonNodeWithValue(entry.getKey(), entry.getValue());
+                    nodeList.addAbstractElement(node);
                 }
-                jsonObject = JsonNodeFactory.getJsonObjectWithNodeList();
+                componentNode = JsonNodeFactory.getJsonObjectWithNodeList();
                 if (oneLineValue.isPresent()) {
-                    JsonNode node = JsonNodeFactory.getJsonNodeWithValue(prepareValueName(elementName), oneLineValue.get());
-                    jsonElementList.addAbstractElement(node);
-                    jsonObject.setAbstractNode(jsonElementList);
+                    Node node = JsonNodeFactory.getJsonNodeWithValue(prepareValueName(elementName), oneLineValue.get());
+                    nodeList.addAbstractElement(node);
+                    componentNode.setAbstractNode(nodeList);
                 } else {
-                    JsonNode node = JsonNodeFactory.getJsonNodeEmpty(prepareValueName(elementName));
-                    jsonElementList.addAbstractElement(node);
-                    jsonObject.setAbstractNode(jsonElementList);
+                    Node node = JsonNodeFactory.getJsonNodeEmpty(prepareValueName(elementName));
+                    nodeList.addAbstractElement(node);
+                    componentNode.setAbstractNode(nodeList);
                 }
 
             } else {
                 elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-                jsonObject = JsonNodeFactory.getJsonObjectWithNode();
+                componentNode = JsonNodeFactory.getJsonObjectWithNode();
                 if (oneLineValue.isPresent()) {
-                    JsonNode node = JsonNodeFactory.getJsonNodeWithValue(elementName, oneLineValue.get());
-                    jsonObject.setAbstractNode(node);
+                    Node node = JsonNodeFactory.getJsonNodeWithValue(elementName, oneLineValue.get());
+                    componentNode.setAbstractNode(node);
                 } else {
-                    JsonNode node = JsonNodeFactory.getJsonNodeEmpty(elementName);
-                    jsonObject.setAbstractNode(node);
+                    Node node = JsonNodeFactory.getJsonNodeEmpty(elementName);
+                    componentNode.setAbstractNode(node);
                 }
             }
         } else {
             elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
             boolean isInputWithList = isInputWithList(input, ELEMENT_NAME_WITH_ATTRIBUTES, elementName);
-            JsonNodeList jsonNodeList;
+            NodeList jsonNodeList;
             if (isInputWithList) {
                 jsonNodeList = JsonNodeFactory.getJsonEqualNodeList(elementName);
             } else {
                 jsonNodeList = JsonNodeFactory.getJsonNodeList(elementName);
             }
-
-            jsonObject = JsonNodeFactory.getJsonObjectWithNodeList();
-            jsonObject.setNodeName(elementName);
+            componentNode = JsonNodeFactory.getJsonObjectWithNodeList();
+            componentNode.setNodeName(elementName);
             String extractedValue = extractElement(input, elementName);
             List<String> allOneLines = new ArrayList<>();
             findAllLines(extractedValue, allOneLines);
-            jsonObject.setAbstractNode(jsonNodeList);
+            componentNode.setAbstractNode(jsonNodeList);
             for (String element : allOneLines) {
-                JsonObject newJsonObject = prepareStructure(element);
+                ComponentNode newJsonObject = prepareStructure(element);
                 jsonNodeList.addAbstractElement(newJsonObject.getAbstractNode());
             }
         }
-        return jsonObject;
+        return componentNode;
     }
 
     private boolean isInputWithList(String input, String regexPattern, String parentName){
