@@ -21,7 +21,7 @@ public class XMLNodeListPrinter implements Printer {
             stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(json2xmlConverter.getCurrentIndentation()));
             stringBuilder.append(currentElement.print());
             if (currentElement.getNodeName().startsWith("@") || (currentElement instanceof Node && !currentElement.getNodeName().startsWith("#")) || currentElement instanceof NodeList){
-                stringBuilder.append(CommonUtils.COLON);
+                stringBuilder.append(CommonUtils.COMMA);
             }
             stringBuilder.append(CommonUtils.NEW_LINE);
         }

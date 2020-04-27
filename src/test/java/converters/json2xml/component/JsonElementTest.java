@@ -83,7 +83,7 @@ public class JsonElementTest {
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
                 "    <number region = \"Russia\">8-900-000-00-00</number>\n" +
-                "    <nonattr1 />\n" +
+                "    <nonattr1/>\n" +
                 "    <nonattr2></nonattr2>\n" +
                 "    <nonattr3>text</nonattr3>\n" +
                 "    <attr1 id = \"1\" />\n" +
@@ -93,46 +93,46 @@ public class JsonElementTest {
                 "        <to>to_example@gmail.com</to>\n" +
                 "        <from>from_example@gmail.com</from>\n" +
                 "        <subject>Project discussion</subject>\n" +
-                "        <body font = \"Verdana\">Body Message</body>\n" +
+                "        <body font = \"Verdana\">Body message</body>\n" +
                 "        <date day = \"12\" month = \"12\" year = \"2018\" />\n" +
                 "    </email>\n" +
                 "</root>";
         String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
-                "    \"root\": {\n" +
-                "        \"id\": \"6753322\",\n" +
-                "        \"number\": {\n" +
-                "            \"@region\": \"Russia\",\n" +
-                "            \"#number\": \"8-900-000-00-00\"\n" +
+                "    \"root\" : {\n" +
+                "        \"id\" : \"6753322\",\n" +
+                "        \"number\" : {\n" +
+                "            \"@region\" : \"Russia\",\n" +
+                "            \"#number\" : \"8-900-000-00-00\"\n" +
                 "        },\n" +
-                "        \"nonattr1\": null,\n" +
-                "        \"nonattr2\": \"\",\n" +
-                "        \"nonattr3\": \"text\",\n" +
-                "        \"attr1\": {\n" +
-                "            \"@id\": \"1\",\n" +
-                "            \"#attr1\": null\n" +
+                "        \"nonattr1\" : null,\n" +
+                "        \"nonattr2\" : \"\",\n" +
+                "        \"nonattr3\" : \"text\",\n" +
+                "        \"attr1\" : {\n" +
+                "            \"@id\" : \"1\",\n" +
+                "            \"#attr1\" : null\n" +
                 "        },\n" +
-                "        \"attr2\": {\n" +
-                "            \"@id\": \"2\",\n" +
-                "            \"#attr2\": \"\"\n" +
+                "        \"attr2\" : {\n" +
+                "            \"@id\" : \"2\",\n" +
+                "            \"#attr2\" : \"\"\n" +
                 "        },\n" +
-                "        \"attr3\": {\n" +
-                "            \"@id\": \"3\",\n" +
-                "            \"#attr3\": \"text\"\n" +
+                "        \"attr3\" : {\n" +
+                "            \"@id\" : \"3\",\n" +
+                "            \"#attr3\" : \"text\"\n" +
                 "        },\n" +
-                "        \"email\": {\n" +
-                "            \"to\": \"to_example@gmail.com\",\n" +
-                "            \"from\": \"from_example@gmail.com\",\n" +
-                "            \"subject\": \"Project discussion\",\n" +
-                "            \"body\": {\n" +
-                "                \"@font\": \"Verdana\",\n" +
-                "                \"#body\": \"Body message\"\n" +
+                "        \"email\" : {\n" +
+                "            \"to\" : \"to_example@gmail.com\",\n" +
+                "            \"from\" : \"from_example@gmail.com\",\n" +
+                "            \"subject\" : \"Project discussion\",\n" +
+                "            \"body\" : {\n" +
+                "                \"@font\" : \"Verdana\",\n" +
+                "                \"#body\" : \"Body message\"\n" +
                 "            },\n" +
-                "            \"date\": {\n" +
-                "                \"@day\": \"12\",\n" +
-                "                \"@month\": \"12\",\n" +
-                "                \"@year\": \"2018\",\n" +
-                "                \"#date\": null\n" +
+                "            \"date\" : {\n" +
+                "                \"@day\" : \"12\",\n" +
+                "                \"@month\" : \"12\",\n" +
+                "                \"@year\" : \"2018\",\n" +
+                "                \"#date\" : null\n" +
                 "            }\n" +
                 "        }\n" +
                 "    }\n" +
