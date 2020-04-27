@@ -1,7 +1,7 @@
 package converters.factories;
 
 import converters.components.Printer;
-import converters.jsonconverter.printer.*;
+import converters.json2xml.printer.*;
 
 public class JsonPrinterFactory extends AbstractPrinterFactory {
 

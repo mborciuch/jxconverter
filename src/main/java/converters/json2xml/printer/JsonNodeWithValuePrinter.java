@@ -1,4 +1,4 @@
-package converters.jsonconverter.printer;
+package converters.json2xml.printer;
 
 import converters.CommonUtils;
 import converters.components.AbstractNode;
@@ -6,7 +6,7 @@ import converters.components.Node;
 import converters.components.Printer;
 
 
-import static converters.jsonconverter.JsonUtils.*;
+import static converters.json2xml.JsonUtils.*;
 
 public class JsonNodeWithValuePrinter implements Printer {
 

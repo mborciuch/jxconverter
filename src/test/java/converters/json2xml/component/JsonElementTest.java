@@ -1,8 +1,8 @@
-package converters.jsonconverter.component;
+package converters.json2xml.component;
 
 import converters.factories.JsonPrinterFactory;
 import converters.factories.NodeFactory;
-import converters.jsonconverter.JsonConverter;
+import converters.json2xml.json2xmlConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -10,40 +10,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonElementTest {
 
-    private static JsonConverter jsonConverter;
+    private static json2xmlConverter json2xmlConverter;
 
     @BeforeAll
     public static void prepareConverter(){
         JsonPrinterFactory jsonNodePrinterFactory = new JsonPrinterFactory();
         NodeFactory nodeFactory = new NodeFactory(jsonNodePrinterFactory);
-        jsonConverter  =  new JsonConverter(nodeFactory);
+        json2xmlConverter =  new json2xmlConverter(nodeFactory);
     }
 
     @Test
     public void buildElementWithValue() {
         String xmlElement  =  "<host>127.0.0.1</host>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\"host\" : \"127.0.0.1\"}", jsonValue);
      }
 
     @Test
     public void buildEmptyElement(){
         String xmlElement  =  "<success></success>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\"success\" : \"\"}", jsonValue);
     }
 
     @Test
     public void buildEmptyElementSingleTag(){
         String xmlElement  =  "<success/>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\"success\" : null}", jsonValue);
     }
 
     @Test
     public void buildElement_NotEmptyElement_WithAttribute(){
         String xmlElement  =  "<employee department = \"manager\">Garry Smith</employee>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"employee\" : {\n" +
                 "        \"@department\" : \"manager\",\n" +
@@ -55,7 +55,7 @@ public class JsonElementTest {
     @Test
     public void buildElement_NotEmptyElement_WithAttributes(){
         String xmlElement  =  "<employee role = \"leader\" department = \"manager\">Garry Smith</employee>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"employee\" : {\n" +
                 "        \"@role\" : \"leader\",\n" +
@@ -68,7 +68,7 @@ public class JsonElementTest {
     @Test
     public void buildElement_EmptyElement_WithAttributes(){
         String xmlElement  =  "<person rate = \"1\" name = \"Torvalds\"/>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"person\" : {\n" +
                 "        \"@rate\" : \"1\",\n" +
@@ -97,7 +97,7 @@ public class JsonElementTest {
                 "        <date day = \"12\" month = \"12\" year = \"2018\" />\n" +
                 "    </email>\n" +
                 "</root>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"root\": {\n" +
                 "        \"id\": \"6753322\",\n" +
@@ -148,11 +148,11 @@ public class JsonElementTest {
                 "       <element3>3</element3>\n" +
                 "   </deep>\n" +
                 "</element>\n" ;
-        String result = jsonConverter.convert(input);
+        String result = json2xmlConverter.convert(input);
         System.out.println(result);
     }
 
-    @Test
+    //Not Nested Element
     public void buildElement_WithListAndNestedLines() {
         String xmlElement  =  "<root>\n" +
                 "    <transaction>\n" +
@@ -240,7 +240,7 @@ public class JsonElementTest {
                 "        <version>0.01</version>\n" +
                 "    </meta>\n" +
                 "</root>";
-        String jsonValue  =  jsonConverter.convert(xmlElement);
+        String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"root\": {\n" +
                 "        \"transaction\": {\n" +
