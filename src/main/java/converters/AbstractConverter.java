@@ -1,18 +1,18 @@
 package converters;
 
-import converters.components.AbstractNode;
+import converters.factories.NodeFactory;
 
 public abstract class AbstractConverter {
 
-    protected AbstractNode abstractNode = null;
+    private NodeFactory nodeFactory;
 
-    public AbstractNode getAbstractNode() {
-        return abstractNode;
-    }
-
-    public void setAbstractNode(AbstractNode abstractNode) {
-        this.abstractNode = abstractNode;
+    public AbstractConverter(NodeFactory nodeFactory) {
+        this.nodeFactory = nodeFactory;
     }
 
     public abstract String convert(String input);
+
+    public NodeFactory getNodeFactory() {
+        return nodeFactory;
+    }
 }
