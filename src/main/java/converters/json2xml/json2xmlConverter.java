@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class json2xmlConverter extends AbstractConverter {
 
-    private static final String XML_ONE_LINE = ">[<>/]*</";
+    private static final String XML_ONE_LINE = ".+?>.*?([<>/]).*?</.+?";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
     private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
@@ -198,12 +198,7 @@ public class json2xmlConverter extends AbstractConverter {
     private boolean isInputOneLine(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
-        if (elementNameMatcher.find()) {
-            int index = input.indexOf(elementNameMatcher.group());
-            //indexOf ></
-            return index + 3 == input.length() - index;
-        }
-        return true;
+        return !elementNameMatcher.find();
     }
 
     private Optional<Map<String, String>> getElementAttributes(String input, String regexp) {
