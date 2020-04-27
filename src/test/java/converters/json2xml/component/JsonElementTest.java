@@ -86,7 +86,7 @@ public class JsonElementTest {
                 "    <nonattr1/>\n" +
                 "    <nonattr2></nonattr2>\n" +
                 "    <nonattr3>text</nonattr3>\n" +
-                "    <attr1 id = \"1\" />\n" +
+                "    <attr1 id = \"1\"/>\n" +
                 "    <attr2 id = \"2\"></attr2>\n" +
                 "    <attr3 id = \"3\">text</attr3>\n" +
                 "    <email>\n" +
