@@ -1,11 +1,11 @@
-package converters.json2xml.printer;
+package converters.xml2json.printer;
 
 import converters.CommonUtils;
 import converters.components.AbstractNode;
 import converters.components.Printer;
 
-import static converters.json2xml.JsonUtils.JSON_COLON;
-import static converters.json2xml.JsonUtils.JSON_QUOTE;
+import static converters.xml2json.JsonUtils.JSON_COLON;
+import static converters.xml2json.JsonUtils.JSON_QUOTE;
 
 public class JsonNodeWithNoValuePrinter implements Printer {
 

@@ -1,8 +1,8 @@
-package converters.json2xml.component;
+package converters.xml2json.component;
 
 import converters.factories.JsonPrinterFactory;
 import converters.factories.NodeFactory;
-import converters.json2xml.json2xmlConverter;
+import converters.xml2json.json2xmlConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

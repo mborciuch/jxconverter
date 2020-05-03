@@ -1,4 +1,4 @@
-package converters.xml2json;
+package converters.json2xml;
 
 public class XmlUtils {
 

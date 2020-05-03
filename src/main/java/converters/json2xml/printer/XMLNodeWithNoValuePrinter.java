@@ -1,4 +1,4 @@
-package converters.xml2json.printer;
+package converters.json2xml.printer;
 
 import converters.components.AbstractNode;
 import converters.components.Node;
@@ -6,8 +6,8 @@ import converters.components.Printer;
 
 import java.util.Map;
 
-import static converters.xml2json.XmlUtils.XML_CLOSE_EMPTY_ELEMENT_TAG;
-import static converters.xml2json.XmlUtils.XML_OPEN_TAG;
+import static converters.json2xml.XmlUtils.XML_CLOSE_EMPTY_ELEMENT_TAG;
+import static converters.json2xml.XmlUtils.XML_OPEN_TAG;
 
 public class XMLNodeWithNoValuePrinter implements Printer {
 
