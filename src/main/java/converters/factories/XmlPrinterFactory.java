@@ -1,35 +1,36 @@
 package converters.factories;
 
 import converters.components.Printer;
+import converters.json2xml.printer.*;
 
 public class XmlPrinterFactory extends AbstractPrinterFactory {
     @Override
     public Printer getComponentNodeWithNodePrinter() {
-        return null;
+        return new XMLComponentNodeWithNodePrinter();
     }
 
     @Override
     public Printer getComponentNodeWithNodeListPrinter() {
-        return null;
+        return new XMLComponentNodeWithNodeListPrinter();
     }
 
     @Override
     public Printer getNodeWithNoValuePrinter() {
-        return null;
+        return new XMLNodeWithNoValuePrinter();
     }
 
     @Override
     public Printer getNodeWithValuePrinter() {
-        return null;
+        return new XMLNodeWithValuePrinter();
     }
 
     @Override
     public Printer getNodeListPrinter() {
-        return null;
+        return new XMLNodeListPrinter();
     }
 
     @Override
     public Printer getNodeEqualListPrinter() {
-        return null;
+        return new XMLEqualNodeListPrinter();
     }
 }

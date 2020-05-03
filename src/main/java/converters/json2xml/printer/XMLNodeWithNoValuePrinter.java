@@ -14,7 +14,7 @@ public class XMLNodeWithNoValuePrinter implements Printer {
     @Override
     public String prepareElement(AbstractNode abstractNode) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(XML_OPEN_TAG).append(abstractNode.getNodeName()).append(abstractNode).append(XML_CLOSE_EMPTY_ELEMENT_TAG);
+        stringBuilder.append(XML_OPEN_TAG).append(abstractNode.getNodeName()).append(XML_CLOSE_EMPTY_ELEMENT_TAG);
         return stringBuilder.toString();
     }
 
@@ -30,6 +30,5 @@ public class XMLNodeWithNoValuePrinter implements Printer {
             return "";
         }
     }
-
 
 }
