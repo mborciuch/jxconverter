@@ -29,13 +29,24 @@ public class XmlElementTest {
         String xmlValue = xmlConverter.convert(jsonElement);
         assertEquals("<jdk>1.8.9</jdk>", xmlValue);
     }
-
     @Test
     public void buildElement_Empty(){
         String jsonElement = "{\"success\" : null}";
         String xmlValue  = xmlConverter.convert(jsonElement);
         assertEquals("<success/>",xmlValue);
 
+    }
+
+    @Test
+    public void buildElement_WithTwoValues() {
+        String jsonElement =
+                "{" +
+                        " \"jdk\" : \"1.8.9\",\n" +
+                " \"jre\" :  \"11.0.1\"}";
+        String xmlValue = xmlConverter.convert(jsonElement);
+        assertEquals(
+                "<jdk>1.8.9</jdk>\n" +
+                "<jre>11.0.1</jdk>", xmlValue);
     }
 
     @Test
