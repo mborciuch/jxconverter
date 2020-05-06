@@ -7,11 +7,13 @@ import converters.components.ComponentNode;
 import converters.components.Node;
 import converters.components.NodeList;
 import converters.factories.NodeFactory;
+import converters.json2xml.exception.ProcessingException;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class XmlConverter extends AbstractConverter {
 
@@ -25,21 +27,27 @@ public class XmlConverter extends AbstractConverter {
     @Override
     public String convert(String input) {
         LinkedHashMap<String, Object> rootMap = null;
+        ComponentNode componentNode = null;
         try {
             rootMap = (LinkedHashMap<String, Object>) objectMapper.readValue(input, Map.class);
-        } catch (JsonProcessingException e) {
+            componentNode = prepareStructure(rootMap);
+        } catch (JsonProcessingException | ProcessingException e) {
             e.printStackTrace();
         }
-        ComponentNode componentNode = prepareStructure(rootMap);
+
         return componentNode.print();
     }
 
-    private ComponentNode prepareStructure(Map<String, Object> rootMap) {
+    //Write method, which choose, which element must be prepared. But There can be only ONE componentNode!!!!!
+    //Maybe should accept Map.Entry
+
+    private ComponentNode prepareStructure(Map<String, Object> rootMap) throws ProcessingException {
         ComponentNode componentNode;
         NodeList nodes;
         if (rootMap.keySet().size() > 1) {
             componentNode = getNodeFactory().getComponentNodeWithNodeList();
             nodes = getNodeFactory().getNodeList("root");
+            //TODO
         } else {
             String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
             if (rootMap.get(key) instanceof String || rootMap.get(key) == null) {
@@ -48,60 +56,96 @@ public class XmlConverter extends AbstractConverter {
                 Map<String, Object> nestedMap = (Map<String, Object>) rootMap.get(key);
                 String nestedMapFirstKey = nestedMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
                 if (nestedMapFirstKey.startsWith("@")) {
-                    componentNode = prepareNodeWithAttributesStructure(rootMap);
+                    componentNode = prepareNodeWithAttributesStructure(nestedMap);
                 } else {
-                    componentNode = prepareListStructure(rootMap);
+                    componentNode = prepareListStructure(nestedMap);
                 }
             }
         }
         return componentNode;
     }
 
-    private ComponentNode prepareListStructure(Map<String, Object> rootMap) {
+    private ComponentNode prepareListStructure(Map<String, Object> rootMap) throws ProcessingException {
         String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
         ComponentNode componentNode = getNodeFactory().getComponentNodeWithNodeList();
         NodeList nodes = getNodeFactory().getNodeList(key);
-        Map<String, Object> nestedMap = (Map<String, Object>) rootMap.get(key);
-        Iterator<Map.Entry<String, Object>> entryIterator = nestedMap.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> entryIterator = rootMap.entrySet().iterator();
         while (entryIterator.hasNext()) {
             Map.Entry<String, Object> currentEntry = entryIterator.next();
             if (currentEntry.getValue() instanceof String || currentEntry.getValue() == null) {
-                Node<String> node;
-                if (currentEntry.getValue() != null) {
-                    node = getNodeFactory().getNodeWithValue(currentEntry.getKey(), currentEntry.getValue());
-                } else {
-                    node = getNodeFactory().getNodeWithNoValue(currentEntry.getKey());
-                }
+                Map<String, Object> tempMap = new LinkedHashMap<>();
+                tempMap.put(currentEntry.getKey(), currentEntry.getValue());
+                Node<String> node = prepareNode(tempMap);
                 nodes.addAbstractElement(node);
             } else {
-                nodes.addAbstractElement(prepareStructure((Map<String, Object>) currentEntry.getValue()));
+                Map<String, Object> innerNestedMap = (Map<String, Object>) currentEntry.getValue();
+                String innerNestedMapFirstKey = innerNestedMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
+                if (innerNestedMapFirstKey.startsWith("@")) {
+                    nodes.addAbstractElement(prepareNodeWithAttributesStructure(innerNestedMap));
+                } else {
+                    nodes.addAbstractElement(prepareNodeList(innerNestedMap));
+                }
             }
         }
         componentNode.setAbstractNode(nodes);
         return componentNode;
     }
 
-    private ComponentNode prepareNodeStructure(Map<String, Object> rootMap) {
+    private NodeList prepareNodeList(Map<String, Object> rootMap) throws ProcessingException {
         String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
+        NodeList nodes = getNodeFactory().getNodeList(key);
+        Iterator<Map.Entry<String, Object>> entryIterator = rootMap.entrySet().iterator();
+        while (entryIterator.hasNext()){
+            Map.Entry<String, Object> currentEntry = entryIterator.next();
+            if (currentEntry.getValue() instanceof String || currentEntry.getValue() == null) {
+                Map<String, Object> tempMap = new LinkedHashMap<>();
+                tempMap.put(currentEntry.getKey(), currentEntry.getValue());
+                Node<String> node = prepareNode(tempMap);
+                nodes.addAbstractElement(node);
+            } else {
+                Map<String, Object> innerNestedMap = (Map<String, Object>) currentEntry.getValue();
+                String innerNestedMapFirstKey = innerNestedMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
+                if (innerNestedMapFirstKey.startsWith("@")) {
+                    nodes.addAbstractElement(prepareNodeWithAttributesStructure(innerNestedMap));
+                } else {
+                    nodes.addAbstractElement(prepareNodeList(innerNestedMap));
+                }
+            }
+        }
+        return nodes;
+    }
+
+    private ComponentNode prepareNodeStructure(Map<String, Object> rootMap) {
         ComponentNode componentNode = getNodeFactory().getComponentNodeWithNode();
-        componentNode.setNodeName(key);
+        Node node = prepareNode(rootMap);
+        componentNode.setNodeName(node.getNodeName());
+        componentNode.setAbstractNode(node);
+        return componentNode;
+    }
+
+    private ComponentNode prepareNodeWithAttributesStructure(Map<String, Object> rootMap) throws ProcessingException {
+        ComponentNode componentNode = getNodeFactory().getComponentNodeWithNode();
+        String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
+        Node node = prepareNodeWithAttributes(rootMap);
+        componentNode.setNodeName(node.getNodeName());
+        componentNode.setAbstractNode(node);
+        return componentNode;
+    }
+
+    private Node prepareNode(Map<String, Object> rootMap){
+        String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
         Node<String> node;
         if (rootMap.get(key) != null) {
             node = getNodeFactory().getNodeWithValue(key, rootMap.get(key));
         } else {
             node = getNodeFactory().getNodeWithNoValue(key);
         }
-        componentNode.setAbstractNode(node);
-        return componentNode;
+        return node;
     }
 
-    private ComponentNode prepareNodeWithAttributesStructure(Map<String, Object> rootMap) {
-        String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
-        ComponentNode componentNode = getNodeFactory().getComponentNodeWithNode();
-        componentNode.setNodeName(key);
+    private Node prepareNodeWithAttributes(Map<String, Object> rootMap) throws ProcessingException {
         Node<String> node = null;
-        Map<String, Object> nestedMap = (Map<String, Object>) rootMap.get(key);
-        Iterator<Map.Entry<String, Object>> iterator = nestedMap.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> iterator = rootMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Object> currentEntry = iterator.next();
             if (!iterator.hasNext()) {
@@ -112,24 +156,25 @@ public class XmlConverter extends AbstractConverter {
                 }
             }
         }
-        iterator = nestedMap.entrySet().iterator();
+        iterator = rootMap.entrySet().iterator();
         Map<String, String> attributes = new HashMap<>();
         while (iterator.hasNext()) {
             Map.Entry<String, Object> currentEntry = iterator.next();
             if (iterator.hasNext()) {
-                if (!(currentEntry.getValue() instanceof String)) {
-                    throw new RuntimeException("Attribute should be String");
+                if ((currentEntry.getValue() instanceof Map)) {
+                    throw new ProcessingException("Attribute should be String or Number");
                 }
-                String value = (String) currentEntry.getValue();
+                String value =  currentEntry.getValue().toString();
                 attributes.put(currentEntry.getKey(), value);
             } else {
                 break;
             }
         }
         node.setAttributes(attributes);
-        componentNode.setAbstractNode(node);
-        return componentNode;
+        return node;
     }
+
+
 }
 
 
