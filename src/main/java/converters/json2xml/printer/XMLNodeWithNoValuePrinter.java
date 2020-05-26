@@ -6,29 +6,43 @@ import converters.components.Printer;
 
 import java.util.Map;
 
-import static converters.json2xml.XmlUtils.XML_CLOSE_EMPTY_ELEMENT_TAG;
-import static converters.json2xml.XmlUtils.XML_OPEN_TAG;
+import static converters.json2xml.XmlUtils.*;
 
 public class XMLNodeWithNoValuePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(XML_OPEN_TAG).append(abstractNode.getNodeName()).append(XML_CLOSE_EMPTY_ELEMENT_TAG);
+        Node xmlLine = (Node) abstractNode;
+        String nodeName;
+        if (xmlLine.getNodeName().startsWith("#")) {
+            nodeName = xmlLine.getNodeName().replaceFirst("#", "");
+        } else {
+            nodeName = xmlLine.getNodeName();
+        }
+        stringBuilder.append(XML_OPEN_TAG).append(nodeName);
+        if (!xmlLine.getAttributes().isEmpty()) {
+            stringBuilder
+                    .append(addAttributes(xmlLine));
+        }
+        stringBuilder.append(XML_CLOSE_EMPTY_ELEMENT_TAG);
         return stringBuilder.toString();
     }
 
-    private String getAttributes(Node node){
-        if (!node.getAttributes().isEmpty()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for(Map.Entry entry : node.getAttributes().entrySet()){
-                stringBuilder.append(entry.getKey()).append("\\s").append(entry.getValue());
+    private String addAttributes(Node node) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String key;
+        String value;
+        for (Map.Entry entry : node.getAttributes().entrySet()) {
+            if(entry.getKey().toString().startsWith("@")){
+                key = entry.getKey().toString().replaceFirst("@", "");
+            } else {
+                key = entry.getKey().toString();
             }
-            return stringBuilder.toString();
+            value = "\"" + entry.getValue().toString() + "\"";
+            stringBuilder.append(" ").append(key).append("=").append(value);
         }
-        else {
-            return "";
-        }
+        return stringBuilder.toString();
     }
 
 }

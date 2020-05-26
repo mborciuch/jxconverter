@@ -41,12 +41,14 @@ public class XmlElementTest {
     public void buildElement_WithTwoValues() {
         String jsonElement =
                 "{" +
-                        " \"jdk\" : \"1.8.9\",\n" +
+                " \"jdk\" : \"1.8.9\",\n" +
                 " \"jre\" :  \"11.0.1\"}";
         String xmlValue = xmlConverter.convert(jsonElement);
         assertEquals(
-                "<jdk>1.8.9</jdk>\n" +
-                "<jre>11.0.1</jdk>", xmlValue);
+                "<root>\n" + "" +
+                        "<jdk>1.8.9</jdk>\n" +
+                "<jre>11.0.1</jdk>\n" +
+                "</root>", xmlValue);
     }
 
     @Test
@@ -58,7 +60,7 @@ public class XmlElementTest {
                 "    }\n" +
                 "}";
         String xmlValue = xmlConverter.convert(jsonElement);
-        assertEquals("<employee department = \"manager\">Garry Smith</employee>", xmlValue);
+        assertEquals("<employee department=\"manager\">Garry Smith</employee>", xmlValue);
     }
 
     @Test
@@ -71,7 +73,7 @@ public class XmlElementTest {
                 "    }\n " +
                 "}";
         String xmlValue = xmlConverter.convert(jsonElement);
-        assertEquals("<person rate = \"1\" name = \"Torvalds\"/>", xmlValue);
+        assertEquals("<person rate=\"1\" name=\"Torvalds\"/>", xmlValue);
     }
 
     @Test

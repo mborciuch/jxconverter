@@ -14,24 +14,39 @@ public class XMLNodeWithValuePrinter implements Printer {
     public String prepareElement(AbstractNode abstractNode) {
         StringBuilder stringBuilder = new StringBuilder();
         Node xmlLine = (Node) abstractNode;
-        stringBuilder
-                .append(XML_OPEN_TAG).append(xmlLine.getNodeName()).append(getAttributes(xmlLine)).append(XML_CLOSE_TAG)
-                .append(xmlLine.getValue()).append(XML_CLOSE_ELEMENT_TAG).append(xmlLine.getNodeName()).append(XML_CLOSE_TAG);
+        String nodeName;
+        if (xmlLine.getNodeName().startsWith("#")) {
+            nodeName = xmlLine.getNodeName().replaceFirst("#", "");
+        } else {
+            nodeName = xmlLine.getNodeName();
+        }
+        stringBuilder.append(XML_OPEN_TAG).append(nodeName);
+        if (!xmlLine.getAttributes().isEmpty()) {
+            stringBuilder
+                    .append(addAttributes(xmlLine));
+        }
+        stringBuilder.append(XML_CLOSE_TAG)
+                .append(xmlLine.getValue()).append(XML_CLOSE_ELEMENT_TAG).append(nodeName).append(XML_CLOSE_TAG);
         return stringBuilder.toString();
     }
 
-    private String getAttributes(Node node){
-        if (!node.getAttributes().isEmpty()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for(Map.Entry entry : node.getAttributes().entrySet()){
-                stringBuilder.append(entry.getKey()).append("\\s").append(entry.getValue());
+    private String addAttributes(Node node) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" ");
+        String key;
+        String value;
+        for (Map.Entry entry : node.getAttributes().entrySet()) {
+            if(entry.getKey().toString().startsWith("@")){
+                key = entry.getKey().toString().replaceFirst("@", "");
+            } else {
+                 key = entry.getKey().toString();
             }
-            return stringBuilder.toString();
+            value = "\"" + entry.getValue().toString() + "\"";
+            stringBuilder.append(key).append("=").append(value);
         }
-        else {
-            return "";
-        }
+        return stringBuilder.toString();
     }
-
-
 }
+
+
+
