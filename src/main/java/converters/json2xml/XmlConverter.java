@@ -45,8 +45,7 @@ public class XmlConverter extends AbstractConverter {
         NodeList nodes;
         if (rootMap.keySet().size() > 1) {
             componentNode = getNodeFactory().getComponentNodeWithNodeList();
-            nodes = getNodeFactory().getNodeList("root");
-            //TODO
+            componentNode.setAbstractNode(prepareNodeList("root", rootMap));
         } else {
             String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
             if (rootMap.get(key) instanceof String || rootMap.get(key) == null) {

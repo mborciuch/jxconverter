@@ -45,9 +45,9 @@ public class XmlElementTest {
                 " \"jre\" :  \"11.0.1\"}";
         String xmlValue = xmlConverter.convert(jsonElement);
         assertEquals(
-                "<root>\n" + "" +
-                        "<jdk>1.8.9</jdk>\n" +
-                "<jre>11.0.1</jdk>\n" +
+                "<root>\n" +
+                "    <jdk>1.8.9</jdk>\n" +
+                "    <jre>11.0.1</jre>\n" +
                 "</root>", xmlValue);
     }
 
