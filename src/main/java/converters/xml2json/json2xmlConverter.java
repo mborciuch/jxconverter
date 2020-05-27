@@ -18,7 +18,7 @@ public class json2xmlConverter extends AbstractConverter {
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
     private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
     private static final String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
-    private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s=\\s\"(.*?)\"";
+    private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s?=\\s?\"(.*?)\"";
     private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
 
     private static final String ATTRIBUTE_SIGN = "@";

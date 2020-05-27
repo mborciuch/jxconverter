@@ -58,7 +58,7 @@ public class JsonElementTest {
 
     @Test
     public void buildElement_NotEmptyElement_WithAttributes(){
-        String xmlElement  =  "<employee role = \"leader\" department = \"manager\">Garry Smith</employee>";
+        String xmlElement  =  "<employee role =\"leader\" department=\"manager\">Garry Smith</employee>";
         String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"employee\" : {\n" +
@@ -71,7 +71,7 @@ public class JsonElementTest {
 
     @Test
     public void buildElement_EmptyElement_WithAttributes(){
-        String xmlElement  =  "<person rate = \"1\" name = \"Torvalds\"/>";
+        String xmlElement  =  "<person rate=\"1\" name=\"Torvalds\"/>";
         String jsonValue  =  json2xmlConverter.convert(xmlElement);
         assertEquals("{\n" +
                 "    \"person\" : {\n" +
@@ -368,15 +368,5 @@ public class JsonElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}", jsonValue);
-    }
-    @Test
-    void quickLinkedHasMapTest(){
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("first", "1");
-        map.put("second", "2");
-        map.put("third", "3");
-        for(Map.Entry entry : map.entrySet()){
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        }
     }
 }
