@@ -6,6 +6,10 @@ import converters.xml2json.json2xmlConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonElementTest {
@@ -364,5 +368,15 @@ public class JsonElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}", jsonValue);
+    }
+    @Test
+    void quickLinkedHasMapTest(){
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("first", "1");
+        map.put("second", "2");
+        map.put("third", "3");
+        for(Map.Entry entry : map.entrySet()){
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
     }
 }

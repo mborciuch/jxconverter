@@ -120,19 +120,19 @@ public class XmlElementTest {
         String xmlValue  =  xmlConverter.convert(jsonElement);
         assertEquals("<root>\n" +
                 "    <id>6753322</id>\n" +
-                "    <number region = \"Russia\">8-900-000-00-00</number>\n" +
+                "    <number region=\"Russia\">8-900-000-00-00</number>\n" +
                 "    <nonattr1/>\n" +
                 "    <nonattr2></nonattr2>\n" +
                 "    <nonattr3>text</nonattr3>\n" +
-                "    <attr1 id = \"1\"/>\n" +
-                "    <attr2 id = \"2\"></attr2>\n" +
-                "    <attr3 id = \"3\">text</attr3>\n" +
+                "    <attr1 id=\"1\"/>\n" +
+                "    <attr2 id=\"2\"></attr2>\n" +
+                "    <attr3 id=\"3\">text</attr3>\n" +
                 "    <email>\n" +
                 "        <to>to_example@gmail.com</to>\n" +
                 "        <from>from_example@gmail.com</from>\n" +
                 "        <subject>Project discussion</subject>\n" +
-                "        <body font = \"Verdana\">Body message</body>\n" +
-                "        <date day = \"12\" month = \"12\" year = \"2018\" />\n" +
+                "        <body font=\"Verdana\">Body message</body>\n" +
+                "        <date day=\"12\" month=\"12\" year=\"2018\"/>\n" +
                 "    </email>\n" +
                 "</root>", xmlValue);
 
@@ -147,7 +147,7 @@ public class XmlElementTest {
                 "    }\n" +
                 "}";
         String xmlValue = xmlConverter.convert(jsonElement);
-        assertEquals("<pizza size = \"20\">123</pizza>", xmlValue);
+        assertEquals("<pizza size=\"20\">123</pizza>", xmlValue);
     }
 
 }

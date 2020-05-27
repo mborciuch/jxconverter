@@ -21,7 +21,6 @@ public class XMLEqualNodeListPrinter implements Printer {
             stringBuilder.append(currentElement.print());
             stringBuilder.append(CommonUtils.NEW_LINE);
         }
-
         json2xmlConverter.decrementCurrentIndentation();
         stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(json2xmlConverter.getCurrentIndentation()));
         stringBuilder.append(JSON_LIST_CLOSE_SIGN);
