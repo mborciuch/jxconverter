@@ -9,7 +9,6 @@ import converters.components.NodeList;
 import converters.factories.NodeFactory;
 import converters.json2xml.exception.ProcessingException;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,8 +36,6 @@ public class XmlConverter extends AbstractConverter {
         return componentNode.print();
     }
 
-    //Write method, which choose, which element must be prepared. But There can be only ONE componentNode!!!!!
-    //Maybe should accept Map.Entry
 
     private ComponentNode prepareStructure(Map<String, Object> rootMap) throws ProcessingException {
         ComponentNode componentNode;
