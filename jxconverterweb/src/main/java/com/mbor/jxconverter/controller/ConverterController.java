@@ -2,6 +2,7 @@ package com.mbor.jxconverter.controller;
 
 import com.mbor.converterservice.converters.abstractconverter.json2xml.Xml2jsonConverter;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Json2xmlConverter;
+import com.mbor.jxconverter.model.InputValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,13 +25,13 @@ public class ConverterController {
 
     @GetMapping(params = "conversionType=toJson")
     public ResponseEntity<String> convertXmlToJson(@RequestBody InputValue inputValue){
-        String result = xml2jsonConverter.convert(inputValue.getValue);
+        String result = xml2jsonConverter.convert(inputValue.getValue());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(params = "conversionType=toXml")
     public ResponseEntity<String> convertJsonToXml(@RequestBody InputValue inputValue){
-        String result = json2xmlConverter.convert(inputValue.getValue);
+        String result = json2xmlConverter.convert(inputValue.getValue());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
