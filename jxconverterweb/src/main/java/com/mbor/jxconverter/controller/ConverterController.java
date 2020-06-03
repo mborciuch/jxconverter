@@ -4,12 +4,10 @@ import com.mbor.converterservice.converters.abstractconverter.json2xml.Json2XmlC
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 import com.mbor.jxconverter.model.InputValue;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/converters")
@@ -23,13 +21,17 @@ public class ConverterController {
         this.xml2jsonConverter = xml2jsonConverter;
     }
 
-    @GetMapping(params = "conversionType=toJson")
+    @PostMapping(params = "conversionType=toJson",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<String> convertXmlToJson(@RequestBody InputValue inputValue){
         String result = xml2jsonConverter.convert(inputValue.getValue());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(params = "conversionType=toXml")
+    @PostMapping(params = "conversionType=toXml",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<String> convertJsonToXml(@RequestBody InputValue inputValue){
         String result = json2xmlConverter.convert(inputValue.getValue());
         return new ResponseEntity<>(result, HttpStatus.OK);
