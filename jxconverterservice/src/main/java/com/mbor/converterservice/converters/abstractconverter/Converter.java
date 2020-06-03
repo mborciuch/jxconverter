@@ -1,5 +1,5 @@
 package com.mbor.converterservice.converters.abstractconverter;
 
-public interface Converter {
+ interface Converter {
     String convert(String input);
 }

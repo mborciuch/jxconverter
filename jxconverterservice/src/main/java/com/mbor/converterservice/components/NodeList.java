@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class NodeList extends AbstractNode implements Iterable<AbstractNode> {
+ public class NodeList extends AbstractNode implements Iterable<AbstractNode> {
 
     private String elementName;
 

@@ -1,6 +1,6 @@
 package com.mbor.converterservice.components;
 
-public interface Printer {
+ public interface Printer {
 
     String prepareElement(AbstractNode abstractNode);
 

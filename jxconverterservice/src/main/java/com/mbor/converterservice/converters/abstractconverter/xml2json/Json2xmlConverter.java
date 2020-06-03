@@ -1,4 +1,4 @@
-package com.mbor.converterservice.converters.xml2json;
+package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.components.ComponentNode;

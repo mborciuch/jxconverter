@@ -1,6 +1,6 @@
 package com.mbor.converterservice.components;
 
-public  class Node extends AbstractNode {
+public class Node extends AbstractNode {
 
     private String elementName;
 

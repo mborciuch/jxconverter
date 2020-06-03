@@ -2,7 +2,7 @@ package com.mbor.converterservice.converters.abstractconverter;
 
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
-public abstract class AbstractConverter implements Converter {
+ public abstract class AbstractConverter implements Converter {
 
     private NodeFactory nodeFactory;
 

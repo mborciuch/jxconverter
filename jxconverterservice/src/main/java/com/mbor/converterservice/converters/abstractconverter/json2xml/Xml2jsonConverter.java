@@ -1,4 +1,4 @@
-package com.mbor.converterservice.converters.json2xml;
+package com.mbor.converterservice.converters.abstractconverter.json2xml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

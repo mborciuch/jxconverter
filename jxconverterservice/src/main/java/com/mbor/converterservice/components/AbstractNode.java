@@ -3,7 +3,7 @@ package com.mbor.converterservice.components;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public abstract class AbstractNode {
+ public abstract class AbstractNode {
 
     private Map<String, String> attributes = new LinkedHashMap<>();
 

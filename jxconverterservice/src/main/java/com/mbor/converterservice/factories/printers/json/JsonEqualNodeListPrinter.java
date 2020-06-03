@@ -4,7 +4,7 @@ import com.mbor.converterservice.utils.CommonUtils;
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.Printer;
-import com.mbor.converterservice.converters.xml2json.Json2xmlConverter;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.Json2xmlConverter;
 
 import static com.mbor.converterservice.utils.JsonUtils.*;
 
