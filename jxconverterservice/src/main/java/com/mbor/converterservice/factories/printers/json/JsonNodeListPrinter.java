@@ -5,7 +5,7 @@ import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.Printer;
-import com.mbor.converterservice.converters.abstractconverter.xml2json.Json2xmlConverter;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 
 import java.util.Iterator;
 
@@ -17,12 +17,12 @@ public class JsonNodeListPrinter implements Printer {
         NodeList jsonElementList = (NodeList) abstractNode;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(JSON_QUOTE).append(jsonElementList.getNodeName()).append(JSON_QUOTE).append(CommonUtils.EMPTY_SPACE).append(JSON_COLON).append(CommonUtils.EMPTY_SPACE).append(JSON_OPEN_SIGN).append(CommonUtils.NEW_LINE);
-        Json2xmlConverter.incrementCurrentIndentation();
+        Xml2JsonConverter.incrementCurrentIndentation();
         Iterator<AbstractNode> jsonElementListIterator = jsonElementList.iterator();
         AbstractNode currentElement;
         while (jsonElementListIterator.hasNext()) {
             currentElement = jsonElementListIterator.next();
-            stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Json2xmlConverter.getCurrentIndentation()));
+            stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
             stringBuilder.append(currentElement.print());
             if (currentElement.getNodeName().startsWith("@") || (currentElement instanceof Node && !currentElement.getNodeName().startsWith("#")) || (currentElement instanceof NodeList && jsonElementListIterator.hasNext())){
                 stringBuilder.append(CommonUtils.COMMA);
@@ -30,8 +30,8 @@ public class JsonNodeListPrinter implements Printer {
             stringBuilder.append(CommonUtils.NEW_LINE);
         }
 
-        Json2xmlConverter.decrementCurrentIndentation();
-        stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Json2xmlConverter.getCurrentIndentation()));
+        Xml2JsonConverter.decrementCurrentIndentation();
+        stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
         stringBuilder.append(JSON_CLOSE_SIGN);
         return stringBuilder.toString();
     }

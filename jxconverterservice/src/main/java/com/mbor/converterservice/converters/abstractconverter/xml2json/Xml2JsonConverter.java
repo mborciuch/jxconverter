@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Json2xmlConverter extends AbstractConverter {
+public class Xml2JsonConverter extends AbstractConverter {
 
     private static final String XML_ONE_LINE = ".+?>.*?([<>/]).*?</.+?";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
@@ -28,7 +28,7 @@ public class Json2xmlConverter extends AbstractConverter {
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
 
-    public Json2xmlConverter(NodeFactory nodeFactory) {
+    public Xml2JsonConverter(NodeFactory nodeFactory) {
         super(nodeFactory);
     }
 
@@ -37,11 +37,11 @@ public class Json2xmlConverter extends AbstractConverter {
     }
 
     public static void incrementCurrentIndentation() {
-        Json2xmlConverter.currentIndentation += indentationOffset;
+        Xml2JsonConverter.currentIndentation += indentationOffset;
     }
 
     public static void decrementCurrentIndentation() {
-        Json2xmlConverter.currentIndentation -= indentationOffset;
+        Xml2JsonConverter.currentIndentation -= indentationOffset;
     }
 
     @Override

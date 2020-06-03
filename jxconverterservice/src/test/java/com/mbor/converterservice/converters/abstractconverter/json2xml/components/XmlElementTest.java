@@ -3,7 +3,7 @@ package com.mbor.converterservice.converters.abstractconverter.json2xml.componen
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.factories.printers.XmlPrinterFactory;
-import com.mbor.converterservice.converters.abstractconverter.json2xml.Xml2jsonConverter;
+import com.mbor.converterservice.converters.abstractconverter.json2xml.Json2XmlConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,26 +12,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class XmlElementTest {
 
-    private static Xml2jsonConverter xml2jsonConverter;
+    private static Json2XmlConverter json2XmlConverter;
 
     @BeforeAll
     public static void prepareConverter(){
         XmlPrinterFactory xmlPrinterFactory = new XmlPrinterFactory();
         NodeFactory nodeFactory = new NodeFactory(xmlPrinterFactory);
         ObjectMapper objectMapper = new ObjectMapper();
-        xml2jsonConverter = new Xml2jsonConverter(nodeFactory, objectMapper);
+        json2XmlConverter = new Json2XmlConverter(nodeFactory, objectMapper);
     }
 
     @Test
     public void buildElement_WithValue() {
         String jsonElement = "{\"jdk\" : \"1.8.9\"}";
-        String xmlValue = xml2jsonConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<jdk>1.8.9</jdk>", xmlValue);
     }
     @Test
     public void buildElement_Empty(){
         String jsonElement = "{\"success\" : null}";
-        String xmlValue  = xml2jsonConverter.convert(jsonElement);
+        String xmlValue  = json2XmlConverter.convert(jsonElement);
         assertEquals("<success/>",xmlValue);
 
     }
@@ -42,7 +42,7 @@ public class XmlElementTest {
                 "{" +
                 " \"jdk\" : \"1.8.9\",\n" +
                 " \"jre\" :  \"11.0.1\"}";
-        String xmlValue = xml2jsonConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals(
                 "<root>\n" +
                 "    <jdk>1.8.9</jdk>\n" +
@@ -58,7 +58,7 @@ public class XmlElementTest {
                 "        \"#employee\" : \"Garry Smith\"\n" +
                 "    }\n" +
                 "}";
-        String xmlValue = xml2jsonConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<employee department=\"manager\">Garry Smith</employee>", xmlValue);
     }
 
@@ -71,7 +71,7 @@ public class XmlElementTest {
                 "        \"#person\" : null\n" +
                 "    }\n " +
                 "}";
-        String xmlValue = xml2jsonConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<person rate=\"1\" name=\"Torvalds\"/>", xmlValue);
     }
 
@@ -116,7 +116,7 @@ public class XmlElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        String xmlValue  =  xml2jsonConverter.convert(jsonElement);
+        String xmlValue  =  json2XmlConverter.convert(jsonElement);
         assertEquals("<root>\n" +
                 "    <id>6753322</id>\n" +
                 "    <number region=\"Russia\">8-900-000-00-00</number>\n" +
@@ -145,7 +145,7 @@ public class XmlElementTest {
                 "        \"#pizza\" : 123\n" +
                 "    }\n" +
                 "}";
-        String xmlValue = xml2jsonConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<pizza size=\"20\">123</pizza>", xmlValue);
     }
 

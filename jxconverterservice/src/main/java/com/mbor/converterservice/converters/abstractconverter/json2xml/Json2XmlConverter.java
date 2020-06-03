@@ -14,11 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public class Xml2jsonConverter extends AbstractConverter {
+public class Json2XmlConverter extends AbstractConverter {
 
     private final ObjectMapper objectMapper;
 
-    public Xml2jsonConverter(NodeFactory nodeFactory, ObjectMapper objectMapper) {
+    public Json2XmlConverter(NodeFactory nodeFactory, ObjectMapper objectMapper) {
         super(nodeFactory);
         this.objectMapper = objectMapper;
     }
