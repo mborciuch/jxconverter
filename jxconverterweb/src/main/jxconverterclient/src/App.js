@@ -11,14 +11,20 @@ class App extends Component {
                 <div className="description">
                     <p>Put your data below</p>
                 </div>
-                <div id="xml-to-json--converter" className="converters-container">
-                    <div className="converter">
+                <div className="converters-container">
+                    <div id="xml-to-json--converter" className="container-element converter">
                         <h2>xml</h2>
                         <textarea id="xml-input-field">
 
                         </textarea>
                     </div>
-                    <div id="json-to-xml-converter" className="converter">
+                    <div className="container-element buttons">
+                        <p>
+                            <button className="button"> --V</button>
+                            <button className="button"> V--</button>
+                        </p>
+                    </div>
+                    <div id="json-to-xml-converter" className="container-element converter">
                         <h2>json</h2>
                         <textarea id="json-input-field">
 
