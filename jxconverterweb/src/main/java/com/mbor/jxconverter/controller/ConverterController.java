@@ -1,7 +1,7 @@
 package com.mbor.jxconverter.controller;
 
-import com.mbor.converterservice.converters.abstractconverter.json2xml.Xml2jsonConverter;
-import com.mbor.converterservice.converters.abstractconverter.xml2json.Json2xmlConverter;
+import com.mbor.converterservice.converters.abstractconverter.json2xml.Json2XmlConverter;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 import com.mbor.jxconverter.model.InputValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/converters")
 public class ConverterController {
 
-    private final Json2xmlConverter json2xmlConverter;
-    private final Xml2jsonConverter xml2jsonConverter;
+    private final Json2XmlConverter json2xmlConverter;
+    private final Xml2JsonConverter xml2jsonConverter;
 
-    public ConverterController(Json2xmlConverter json2xmlConverter, Xml2jsonConverter xml2jsonConverter) {
+    public ConverterController(Json2XmlConverter json2xmlConverter, Xml2JsonConverter xml2jsonConverter) {
         this.json2xmlConverter = json2xmlConverter;
         this.xml2jsonConverter = xml2jsonConverter;
     }
