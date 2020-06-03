@@ -1,24 +1,15 @@
 
-.converter {
+.container-element {
   display: inline-block;
   margin: 0 20px;
+}
+
+.container-element button{
+  display: block;
 }
 
 .converter h2 {
   text-align: center;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
 
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
