@@ -1,15 +1,23 @@
 
-.container-element {
-  display: inline-block;
-  margin: 0 20px;
-}
-
-.container-element button{
-  display: block;
-}
-
 .converter h2 {
-  text-align: center;
+    text-align: center;
 }
+
+.container-element {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+.buttons {
+    position: relative;
+    bottom: 300px;
+}
+
+.button {
+    display: block;
+    min-width: 80px;
+}
+
+
 
 

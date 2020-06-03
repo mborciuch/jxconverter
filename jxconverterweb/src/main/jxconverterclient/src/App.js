@@ -20,8 +20,8 @@ class App extends Component {
                     </div>
                     <div className="container-element buttons">
                         <p>
-                            <button className="button"> --V</button>
-                            <button className="button"> V--</button>
+                            <button className="button"> To Json</button>
+                            <button className="button"> To Xml</button>
                         </p>
                     </div>
                     <div id="json-to-xml-converter" className="container-element converter">
