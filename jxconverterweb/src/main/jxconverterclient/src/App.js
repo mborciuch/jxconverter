@@ -14,7 +14,7 @@ class App extends Component {
                 <div className="converters-container">
                     <div id="xml-to-json--converter" className="container-element converter">
                         <h2>xml</h2>
-                        <textarea id="xml-input-field">
+                        <textarea id="xml-input-field" rows="40" cols="60">
 
                         </textarea>
                     </div>
@@ -26,7 +26,7 @@ class App extends Component {
                     </div>
                     <div id="json-to-xml-converter" className="container-element converter">
                         <h2>json</h2>
-                        <textarea id="json-input-field">
+                        <textarea id="json-input-field" rows="40" cols="60">
 
                         </textarea>
                     </div>
