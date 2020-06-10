@@ -1,7 +1,10 @@
 package com.mbor.jxconverter.model;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 public class InputValue {
 
+    @JsonRawValue
     String value;
 
     public String getValue() {
