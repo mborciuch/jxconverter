@@ -1,7 +1,19 @@
 import React, {Component} from 'react';
 import './App.css';
+import './ConverterComponent';
+import ConverterComponent from "./ConverterComponent";
 
 const url = "/api/converters";
+const xmlConverter = {
+    id: "xml-to-json-converter",
+    title: "xml",
+    textareaId: "xml-input-field"
+};
+const jsonConverter = {
+    id: "json-to-xml-converter",
+    title: "json",
+    textareaId: "json-input-field"
+};
 
 class App extends Component {
 
@@ -23,7 +35,14 @@ class App extends Component {
         )
     }
 
-    updateJsonTextArea(value){
+    handleJsonTextAreaChange(e) {
+        e.preventDefault();
+        this.setState(
+            {jsonValue: e.target.value}
+        )
+    }
+
+    updateJsonTextArea(value) {
         document.getElementById("json-input-field").value = value;
     }
 
@@ -37,11 +56,10 @@ class App extends Component {
         })
             .then(response => response.json())
             .then(jsonValue => {
-                    this.setState({jsonValue : JSON.stringify(jsonValue.value)});
+                    this.setState({jsonValue: JSON.stringify(jsonValue.value)});
                     this.updateJsonTextArea(JSON.stringify(jsonValue.value));
                 }
-                )
-
+            )
     }
 
 
@@ -55,25 +73,15 @@ class App extends Component {
                     <p>Put your data below</p>
                 </div>
                 <div className="converters-container">
-                    <div id="xml-to-json--converter" className="container-element converter"
-                         onChange={this.handleXmlTextAreaChange}>
-                        <h2>xml</h2>
-                        <textarea id="xml-input-field" rows="40" cols="60">
-
-                        </textarea>
-                    </div>
+                    <ConverterComponent data={xmlConverter} onChange={this.handleXmlTextAreaChange}/>
                     <div className="container-element buttons">
                         <p>
                             <button className="button" onClick={this.handleConvertToJson}> To Json</button>
                             <button className="button"> To Xml</button>
                         </p>
                     </div>
-                    <div id="json-to-xml-converter" className="container-element converter">
-                        <h2>json</h2>
-                        <textarea id="json-input-field" rows="40" cols="60">
+                    <ConverterComponent data={jsonConverter} onChange={this.handleJsonTextAreaChange}/>
 
-                        </textarea>
-                    </div>
                 </div>
             </div>
         );
