@@ -2,6 +2,36 @@ import React, {Component} from 'react';
 import './App.css';
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.props = {url: "/converterts"};
+        this.state = {
+            xmlValue: "",
+            jsonValue: ""
+        }
+
+    }
+
+    handleXmlTextAreaChange(e) {
+        e.preventDefault();
+        this.setState(
+            {xmlValue: e.target.value}
+        )
+    }
+
+    handleConvertToJson(e) {
+        fetch(this.props.url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state.xmlValue)
+        })
+            .then(response => response.json())
+            .then(jsonValue => this.setState({jsonValue}));
+    }
+
     render() {
         return (
             <div>
