@@ -1,5 +1,6 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
+import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
@@ -46,11 +47,11 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     @Override
     public String convert(String input) {
-        return prepareStructure(trimInput(input)).print();
+        AbstractNode resultTree = prepareStructure(trimInput(input));
+        return prepareComponentNode(resultTree).print();
     }
 
-    private ComponentNode prepareStructure(String input) {
-        ComponentNode componentNode;
+    private AbstractNode prepareStructure(String input) {
         String elementName;
         boolean isInputOneLineXML = isInputOneLine(input);
         if (isInputOneLineXML) {
@@ -63,28 +64,26 @@ public class Xml2JsonConverter extends AbstractConverter {
                     Node node = getNodeFactory().getNodeWithValue(entry.getKey(), entry.getValue());
                     nodeList.addAbstractElement(node);
                 }
-                componentNode = getNodeFactory().getComponentNodeWithNodeList();
                 if (oneLineValue.isPresent()) {
                     Node node = getNodeFactory().getNodeWithValue(prepareValueName(elementName), oneLineValue.get());
                     nodeList.addAbstractElement(node);
-                    componentNode.setAbstractNode(nodeList);
                 } else {
                     Node node = getNodeFactory().getNodeWithNoValue(prepareValueName(elementName));
                     nodeList.addAbstractElement(node);
-                    componentNode.setAbstractNode(nodeList);
                 }
+                return nodeList;
 
             } else {
                 elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-                componentNode = getNodeFactory().getComponentNodeWithNode();
+                Node node;
                 if (oneLineValue.isPresent()) {
-                    Node node = getNodeFactory().getNodeWithValue(elementName, oneLineValue.get());
-                    componentNode.setAbstractNode(node);
+                     node = getNodeFactory().getNodeWithValue(elementName, oneLineValue.get());
                 } else {
-                    Node node = getNodeFactory().getNodeWithNoValue(elementName);
-                    componentNode.setAbstractNode(node);
+                     node = getNodeFactory().getNodeWithNoValue(elementName);
                 }
+                return node;
             }
+
         } else {
             elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
             boolean isInputWithList = isInputWithList(input, ELEMENT_NAME_WITH_ATTRIBUTES, elementName);
@@ -94,18 +93,15 @@ public class Xml2JsonConverter extends AbstractConverter {
             } else {
                 nodeList = getNodeFactory().getNodeList(elementName);
             }
-            componentNode = getNodeFactory().getComponentNodeWithNodeList();
-            componentNode.setNodeName(elementName);
             String extractedValue = extractElement(input, elementName);
             List<String> allOneLines = new ArrayList<>();
             findAllLines(extractedValue, allOneLines);
-            componentNode.setAbstractNode(nodeList);
             for (String element : allOneLines) {
-                ComponentNode newJsonObject = prepareStructure(element);
-                nodeList.addAbstractElement(newJsonObject.getAbstractNode());
+                AbstractNode newJsonObject = prepareStructure(element);
+                nodeList.addAbstractElement(newJsonObject);
             }
+            return nodeList;
         }
-        return componentNode;
     }
 
     private boolean isInputWithList(String input, String regexPattern, String parentName){
@@ -229,5 +225,17 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     private String prepareValueName(String key) {
         return VALUE_SIGN.concat(key);
+    }
+
+    private ComponentNode prepareComponentNode(AbstractNode abstractNode){
+        ComponentNode componentNode;
+        if(abstractNode instanceof Node){
+            componentNode = getNodeFactory().getComponentNodeWithNode();
+            componentNode.setAbstractNode(abstractNode);
+        } else {
+            componentNode = getNodeFactory().getComponentNodeWithNodeList();
+            componentNode.setAbstractNode(abstractNode);
+        }
+        return componentNode;
     }
 }
