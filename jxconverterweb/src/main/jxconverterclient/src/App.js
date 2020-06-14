@@ -24,6 +24,7 @@ class App extends Component {
             jsonValue: ""
         };
         this.handleXmlTextAreaChange = this.handleXmlTextAreaChange.bind(this);
+        this.handleJsonTextAreaChange = this.handleJsonTextAreaChange.bind(this);
         this.handleConvertToJson = this.handleConvertToJson.bind(this);
 
     }
