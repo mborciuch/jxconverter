@@ -1,20 +1,19 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
 import com.mbor.converterservice.components.AbstractNode;
-import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
+import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class Xml2JsonConverter extends AbstractConverter {
 
-    private static final String XML_ONE_LINE = ".+?>.*?([<>/]).*?</.+?";
+    private static final String XML_ONE_LINE = "<(.+?)\\s?(.*)?>(.+)?</\\1>|<([\\w\\d]+)\\s?(.+)?/>";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
     private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
@@ -53,37 +52,26 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     private AbstractNode prepareStructure(String input) {
         String elementName;
-        boolean isInputOneLineXML = isInputOneLine(input);
-        if (isInputOneLineXML) {
-            Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES_ONE_LINE_XML);
-            Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
-            if (possibleAttributes.isPresent()) {
-                elementName = getElementName(input, ELEMENT_NAME_WITH_ATTRIBUTES);
-                NodeList nodeList = getNodeFactory().getNodeList(elementName);
-                for (Map.Entry<String, String> entry : possibleAttributes.get().entrySet()) {
-                    Node node = getNodeFactory().getNodeWithValue(entry.getKey(), entry.getValue());
-                    nodeList.addAbstractElement(node);
-                }
-                if (oneLineValue.isPresent()) {
-                    Node node = getNodeFactory().getNodeWithValue(prepareValueName(elementName), oneLineValue.get());
-                    nodeList.addAbstractElement(node);
-                } else {
-                    Node node = getNodeFactory().getNodeWithNoValue(prepareValueName(elementName));
-                    nodeList.addAbstractElement(node);
-                }
-                return nodeList;
-
+        //is multipleLine
+        //is leaf node / is leaf empty node
+        boolean isInputLeafNode = true;
+        InputExtractionResult result = isInputLeafNode(input);
+        elementName = result.getName();
+        if (isInputLeafNode) {
+            Node node;
+            if (result.getAttributes().isPresent()) {
+                Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES_ONE_LINE_XML));
+                node = getNodeFactory().getNodeWithAttributes(elementName);
+                result.getValue().ifPresent(node::setValue);
+                node.setAttributes(attributes);
             } else {
-                elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-                Node node;
-                if (oneLineValue.isPresent()) {
-                     node = getNodeFactory().getNodeWithValue(elementName, oneLineValue.get());
+                if(result.getValue().isPresent()){
+                    node = getNodeFactory().getNodeWithValue(elementName, result.getValue().get());
                 } else {
-                     node = getNodeFactory().getNodeWithNoValue(elementName);
+                    node = getNodeFactory().getNodeWithNoValue(elementName);
                 }
                 return node;
             }
-
         } else {
             elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
             boolean isInputWithList = isInputWithList(input, ELEMENT_NAME_WITH_ATTRIBUTES, elementName);
@@ -102,9 +90,10 @@ public class Xml2JsonConverter extends AbstractConverter {
             }
             return nodeList;
         }
+        return null;
     }
 
-    private boolean isInputWithList(String input, String regexPattern, String parentName){
+    private boolean isInputWithList(String input, String regexPattern, String parentName) {
         Pattern listPattern = Pattern.compile(parentName.concat(">".concat("<(.*?)[\\s>]")));
         Matcher listMatcher = listPattern.matcher(input);
         String result = null;
@@ -115,7 +104,7 @@ public class Xml2JsonConverter extends AbstractConverter {
         }
         listMatcher.usePattern(Pattern.compile("<".concat(result.concat("[\\s>]"))));
         int counter = 0;
-        while (listMatcher.find()){
+        while (listMatcher.find()) {
             counter++;
         }
         return counter > 0;
@@ -132,6 +121,7 @@ public class Xml2JsonConverter extends AbstractConverter {
     }
 
     private List<String> findAllLines(String input, List<String> allOneLines) {
+        String elementName = "";
         Pattern emptyNodePattern = Pattern.compile("<(.*?/?)>");
         Pattern oneLinePattern = Pattern.compile("((<.*?/?>)(.*?)(</.*?>))");
         Matcher oneLineMatcher = emptyNodePattern.matcher(input);
@@ -143,16 +133,16 @@ public class Xml2JsonConverter extends AbstractConverter {
                 oneLineMatcher.usePattern(oneLinePattern);
             } else {
                 if (getElementValue(oneLineMatcher.group(1), ELEMENT_VALUE_NESTED).isPresent()) {
-                    String elementName;
-                    if (getElementAttributes(oneLineMatcher.group(1), ELEMENT_ATTRIBUTES).isPresent()) {
-                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_WITH_ATTRIBUTES);
-                    } else {
-                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_NO_ATTRIBUTES);
-                    }
+ //                   String elementName;
+//                    if (getElementAttributes(oneLineMatcher.group(1), ELEMENT_ATTRIBUTES).isPresent()) {
+//                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_WITH_ATTRIBUTES);
+//                    } else {
+//                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_NO_ATTRIBUTES);
+//                    }
                     StringBuilder openingTag = new StringBuilder();
                     openingTag.append("<").append(elementName).append(">");
                     StringBuilder closingTag = new StringBuilder(openingTag);
-                    closingTag.insert(1,"/");
+                    closingTag.insert(1, "/");
                     String newInput = input.substring(oneLineMatcher.regionStart());
                     int cutInputLength = input.length() - newInput.length();
                     String extractedValue = openingTag.toString().concat(extractElement(newInput, elementName).concat(closingTag.toString()));
@@ -192,27 +182,45 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     //@JavaDoc Special case: one line xml with empty value : elementName></elementName>
     //Additional check in If statement. 3 derivatives from length of "></"
-    private boolean isInputOneLine(String input) {
+    private InputExtractionResult isInputLeafNode(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
-        return !elementNameMatcher.find();
+        InputExtractionResult inputExtractionResult = new InputExtractionResult();
+        if (!elementNameMatcher.find()) {
+            throw new RuntimeException("Invalid input line: " + input);
+        }
+        if (elementNameMatcher.group(4) == null) {
+            inputExtractionResult.setName(elementNameMatcher.group(1));
+            if (!elementNameMatcher.group(2).isEmpty()) {
+                inputExtractionResult.setAttributes(elementNameMatcher.group(2));
+            }
+            if (elementNameMatcher.group(3) != null) {
+                inputExtractionResult.setValue(elementNameMatcher.group(3));
+            } else {
+                inputExtractionResult.setValueNull(true);
+            }
+        } else {
+            inputExtractionResult.setName(elementNameMatcher.group(4));
+            if (!elementNameMatcher.group(5).isEmpty()) {
+                inputExtractionResult.setAttributes(elementNameMatcher.group(5));
+            }
+            inputExtractionResult.setValueNull(true);
+
+        }
+        return inputExtractionResult;
     }
 
-    private Optional<Map<String, String>> getElementAttributes(String input, String regexp) {
+    private Map<String, String> getElementAttributes(String input, String regexp) {
         Map<String, String> attributes;
         Pattern attributesPattern = Pattern.compile(regexp);
         Matcher attributesMatcher = attributesPattern.matcher(input);
         String[] values;
-        if (attributesMatcher.find()) {
-            attributesMatcher.reset();
-            attributes = new LinkedHashMap<>();
-            while (attributesMatcher.find()){
-                values = attributesMatcher.group().split("=");
-                attributes.put(prepareAttributeName(values[0].trim()), values[1].replace("\"", "").trim());
-            }
-            return Optional.of(attributes);
+        attributes = new LinkedHashMap<>();
+        while (attributesMatcher.find()) {
+            values = attributesMatcher.group().split("=");
+            attributes.put(prepareAttributeName(values[0].trim()), values[1].replace("\"", "").trim());
         }
-        return Optional.empty();
+        return attributes;
     }
 
     private String trimInput(String input) {
@@ -227,9 +235,9 @@ public class Xml2JsonConverter extends AbstractConverter {
         return VALUE_SIGN.concat(key);
     }
 
-    private ComponentNode prepareComponentNode(AbstractNode abstractNode){
+    private ComponentNode prepareComponentNode(AbstractNode abstractNode) {
         ComponentNode componentNode;
-        if(abstractNode instanceof Node){
+        if (abstractNode instanceof Node) {
             componentNode = getNodeFactory().getComponentNodeWithNode();
             componentNode.setAbstractNode(abstractNode);
         } else {
@@ -237,5 +245,49 @@ public class Xml2JsonConverter extends AbstractConverter {
             componentNode.setAbstractNode(abstractNode);
         }
         return componentNode;
+    }
+}
+
+class InputExtractionResult {
+
+    private String name;
+    private String attributes;
+    private String value;
+    private boolean isValueNull = false;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Optional<String> getAttributes() {
+        return Optional.ofNullable(attributes);
+    }
+
+    public void setAttributes(String attributes) {
+        this.attributes = attributes;
+    }
+
+    public Optional<String> getValue() {
+        return Optional.ofNullable(value);
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public boolean isLeaf() {
+        return !value.contains("<");
+    }
+
+    public boolean isValueNull() {
+        return isValueNull;
+    }
+
+    public void setValueNull(boolean valueNull) {
+        isValueNull = valueNull;
     }
 }

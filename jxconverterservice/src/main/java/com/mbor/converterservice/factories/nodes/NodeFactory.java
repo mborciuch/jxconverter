@@ -26,8 +26,15 @@ public class NodeFactory {
     public Node getNodeWithNoValue(String elementName){
         return new Node(elementName, abstractPrinterFactory.getNodeWithNoValuePrinter());
     }
-    public  Node getNodeWithValue(String elementName, String value){
-        return new Node(elementName, abstractPrinterFactory.getNodeWithValuePrinter(),  value);
+    public Node getNodeWithValue(String elementName, String value){
+        return new Node(elementName, value,  abstractPrinterFactory.getNodeWithValuePrinter());
+    }
+    public Node getNodeWithAttributes(String elementName, String value){
+        return new Node(elementName,  value, abstractPrinterFactory.getNodeWithAttributesPrinter());
+    }
+
+    public Node getNodeWithAttributes(String elementName){
+        return new Node(elementName, abstractPrinterFactory.getNodeWithAttributesPrinter());
     }
 
     public NodeList getNodeList(String elementName){

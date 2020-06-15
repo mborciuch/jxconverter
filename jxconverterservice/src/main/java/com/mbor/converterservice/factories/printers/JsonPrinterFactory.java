@@ -34,4 +34,9 @@ public class JsonPrinterFactory extends AbstractPrinterFactory {
     public Printer getNodeEqualListPrinter() {
         return new JsonEqualNodeListPrinter();
     }
+
+    @Override
+    public Printer getNodeWithAttributesPrinter() {
+        return new JsonNodeWithAttributesPrinter();
+    }
 }

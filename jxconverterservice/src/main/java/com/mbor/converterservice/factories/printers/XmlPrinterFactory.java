@@ -33,4 +33,9 @@ public class XmlPrinterFactory extends AbstractPrinterFactory {
     public Printer getNodeEqualListPrinter() {
         return new XMLEqualNodeListPrinter();
     }
+
+    @Override
+    public Printer getNodeWithAttributesPrinter() {
+        return null;
+    }
 }

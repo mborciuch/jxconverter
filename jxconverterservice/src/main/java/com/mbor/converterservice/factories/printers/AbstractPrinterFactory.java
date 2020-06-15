@@ -15,4 +15,6 @@ public abstract class AbstractPrinterFactory {
     public abstract Printer getNodeListPrinter();
 
     public abstract Printer getNodeEqualListPrinter();
+
+    public abstract Printer getNodeWithAttributesPrinter();
 }

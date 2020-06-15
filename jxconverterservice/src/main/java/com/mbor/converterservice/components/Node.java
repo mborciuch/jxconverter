@@ -1,5 +1,7 @@
 package com.mbor.converterservice.components;
 
+import java.util.Optional;
+
 public class Node extends AbstractNode {
 
     private String elementName;
@@ -13,18 +15,18 @@ public class Node extends AbstractNode {
         this.printer = printer;
     }
 
-    public Node(String elementName, Printer printer, String value) {
+    public Node(String elementName,  String value,  Printer printer) {
         this.elementName = elementName;
-        this.printer = printer;
         this.value = value;
+        this.printer = printer;
     }
 
     public void setValue(String value) {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
+    public Optional<String> getValue() {
+        return Optional.ofNullable(value);
     }
 
     @Override

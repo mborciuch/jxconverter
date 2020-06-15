@@ -67,6 +67,19 @@ public class JsonElementTest {
 
     @Test
     public void buildElementEmptyElementWithAttributes(){
+        String xmlElement  =  "<employee role =\"leader\" department=\"manager\"></employee>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"employee\" : {\n" +
+                "        \"@role\" : \"leader\",\n" +
+                "        \"@department\" : \"manager\",\n" +
+                "        \"#employee\" : \"\"\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementNullElementWithAttributes(){
         String xmlElement  =  "<person rate=\"1\" name=\"Torvalds\"/>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -76,6 +89,15 @@ public class JsonElementTest {
                 "        \"#person\" : null\n" +
                 "    }\n" +
                 "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTwoEqualLine(){
+        String xmlElement  =
+                "<host>localhost</host>\n" +
+                "<port>8080</port>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals(xmlElement, jsonValue);
     }
 
     @Test

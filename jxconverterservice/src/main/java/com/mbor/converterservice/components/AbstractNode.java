@@ -1,5 +1,6 @@
 package com.mbor.converterservice.components;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 
     public abstract String print();
 
-    public Map<String, String> getAttributes() {
+     public Map<String, String> getAttributes() {
         return attributes;
     }
 
