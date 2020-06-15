@@ -41,7 +41,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_NotEmptyElement_WithAttribute(){
+    public void buildElementNotEmptyElementWithAttribute(){
         String xmlElement  =  "<employee department = \"manager\">Garry Smith</employee>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -53,7 +53,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_NotEmptyElement_WithAttributes(){
+    public void buildElementNotEmptyElementWithAttributes(){
         String xmlElement  =  "<employee role =\"leader\" department=\"manager\">Garry Smith</employee>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -66,7 +66,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_EmptyElement_WithAttributes(){
+    public void buildElementEmptyElementWithAttributes(){
         String xmlElement  =  "<person rate=\"1\" name=\"Torvalds\"/>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -79,7 +79,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_WithNestedLines(){
+    public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
                 "    <number region = \"Russia\">8-900-000-00-00</number>\n" +
