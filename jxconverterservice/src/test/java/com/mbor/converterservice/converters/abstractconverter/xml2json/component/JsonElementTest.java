@@ -1,8 +1,8 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json.component;
 
-import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
-import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
+import com.mbor.converterservice.factories.nodes.NodeFactory;
+import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildEmptyElementSingleTag(){
+    public void buildNullElementSingleTag(){
         String xmlElement  =  "<success/>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\"success\" : null}", jsonValue);

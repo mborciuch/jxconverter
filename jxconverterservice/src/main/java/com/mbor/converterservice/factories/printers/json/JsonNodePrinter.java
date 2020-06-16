@@ -1,22 +1,23 @@
 package com.mbor.converterservice.factories.printers.json;
 
-import com.mbor.converterservice.utils.CommonUtils;
 import com.mbor.converterservice.components.AbstractNode;
+import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.Printer;
+import com.mbor.converterservice.utils.CommonUtils;
 
 import static com.mbor.converterservice.utils.JsonUtils.JSON_COLON;
 import static com.mbor.converterservice.utils.JsonUtils.JSON_QUOTE;
 
-public class JsonNodeWithNoValuePrinter implements Printer {
+public class JsonNodePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {
+        Node node = (Node) abstractNode;
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(JSON_QUOTE);
         stringBuilder
-                .append(abstractNode.getNodeName()).append(JSON_QUOTE).append(CommonUtils.EMPTY_SPACE).append(JSON_COLON).append(CommonUtils.EMPTY_SPACE).append(CommonUtils.NULL);
+                .append(JSON_QUOTE).append(node.getNodeName()).append(JSON_QUOTE).append(CommonUtils.EMPTY_SPACE).append(JSON_COLON).append(CommonUtils.EMPTY_SPACE)
+                .append(node.getValue());
         return stringBuilder.toString();
     }
-
 
 }

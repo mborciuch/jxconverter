@@ -4,6 +4,10 @@ import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
+import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
+import com.mbor.converterservice.components.ValueObject.EmptyValueObject;
+import com.mbor.converterservice.components.ValueObject.NullValueObject;
+import com.mbor.converterservice.components.ValueObject.ValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
@@ -13,12 +17,12 @@ import java.util.regex.Pattern;
 
 public class Xml2JsonConverter extends AbstractConverter {
 
-    private static final String XML_ONE_LINE = "<(.+?)\\s?(.*)?>(.+)?</\\1>|<([\\w\\d]+)\\s?(.+)?/>";
+    private static final String XML_ONE_LINE = "<(.+)\\s?(.+)?>(.+)?</\\1>|<([\\w\\d]+)\\s?(.+)?/>";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
     private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
     private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
-    private static final String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
+    private static final String ELEMENT_ATTRIBUTES = "([\\w]+)\\s?=\\s?([\\w\\\"]+)";
     private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s?=\\s?\"(.*?)\"";
     private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
 
@@ -52,6 +56,7 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     private AbstractNode prepareStructure(String input) {
         String elementName;
+        AbstractValueObject valueObject;
         //is multipleLine
         //is leaf node / is leaf empty node
         boolean isInputLeafNode = true;
@@ -59,17 +64,14 @@ public class Xml2JsonConverter extends AbstractConverter {
         elementName = result.getName();
         if (isInputLeafNode) {
             Node node;
+            valueObject = prepareValueObject(result);
             if (result.getAttributes().isPresent()) {
-                Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES_ONE_LINE_XML));
-                node = getNodeFactory().getNodeWithAttributes(elementName);
-                result.getValue().ifPresent(node::setValue);
+                Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                node = getNodeFactory().getNodeWithAttributes(elementName, valueObject);
                 node.setAttributes(attributes);
+                return node;
             } else {
-                if(result.getValue().isPresent()){
-                    node = getNodeFactory().getNodeWithValue(elementName, result.getValue().get());
-                } else {
-                    node = getNodeFactory().getNodeWithNoValue(elementName);
-                }
+                node = getNodeFactory().getNode(elementName, valueObject);
                 return node;
             }
         } else {
@@ -90,7 +92,7 @@ public class Xml2JsonConverter extends AbstractConverter {
             }
             return nodeList;
         }
-        return null;
+
     }
 
     private boolean isInputWithList(String input, String regexPattern, String parentName) {
@@ -133,7 +135,7 @@ public class Xml2JsonConverter extends AbstractConverter {
                 oneLineMatcher.usePattern(oneLinePattern);
             } else {
                 if (getElementValue(oneLineMatcher.group(1), ELEMENT_VALUE_NESTED).isPresent()) {
- //                   String elementName;
+                    //                   String elementName;
 //                    if (getElementAttributes(oneLineMatcher.group(1), ELEMENT_ATTRIBUTES).isPresent()) {
 //                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_WITH_ATTRIBUTES);
 //                    } else {
@@ -191,21 +193,19 @@ public class Xml2JsonConverter extends AbstractConverter {
         }
         if (elementNameMatcher.group(4) == null) {
             inputExtractionResult.setName(elementNameMatcher.group(1));
-            if (!elementNameMatcher.group(2).isEmpty()) {
+            if (elementNameMatcher.group(2) != null) {
                 inputExtractionResult.setAttributes(elementNameMatcher.group(2));
             }
             if (elementNameMatcher.group(3) != null) {
                 inputExtractionResult.setValue(elementNameMatcher.group(3));
             } else {
-                inputExtractionResult.setValueNull(true);
+                inputExtractionResult.setValue("");
             }
         } else {
             inputExtractionResult.setName(elementNameMatcher.group(4));
-            if (!elementNameMatcher.group(5).isEmpty()) {
+            if (elementNameMatcher.group(5) != null) {
                 inputExtractionResult.setAttributes(elementNameMatcher.group(5));
             }
-            inputExtractionResult.setValueNull(true);
-
         }
         return inputExtractionResult;
     }
@@ -216,9 +216,12 @@ public class Xml2JsonConverter extends AbstractConverter {
         Matcher attributesMatcher = attributesPattern.matcher(input);
         String[] values;
         attributes = new LinkedHashMap<>();
-        while (attributesMatcher.find()) {
-            values = attributesMatcher.group().split("=");
-            attributes.put(prepareAttributeName(values[0].trim()), values[1].replace("\"", "").trim());
+        try {
+            while (attributesMatcher.find()) {
+                attributes.put(attributesMatcher.group(1), attributesMatcher.group(2).replace("\"",""));
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Enexpected error during processing attributtes:" + e.getMessage());
         }
         return attributes;
     }
@@ -238,13 +241,33 @@ public class Xml2JsonConverter extends AbstractConverter {
     private ComponentNode prepareComponentNode(AbstractNode abstractNode) {
         ComponentNode componentNode;
         if (abstractNode instanceof Node) {
-            componentNode = getNodeFactory().getComponentNodeWithNode();
-            componentNode.setAbstractNode(abstractNode);
+            if(abstractNode.hasAttributes()){
+                componentNode = getNodeFactory().getComponentNodeWithNodeList();
+                componentNode.setAbstractNode(abstractNode);
+            } else {
+                componentNode = getNodeFactory().getComponentNodeWithNode();
+                componentNode.setAbstractNode(abstractNode);
+            }
         } else {
             componentNode = getNodeFactory().getComponentNodeWithNodeList();
             componentNode.setAbstractNode(abstractNode);
         }
         return componentNode;
+    }
+
+    private AbstractValueObject prepareValueObject(InputExtractionResult result){
+        AbstractValueObject valueObject;
+        if (result.getValue().isPresent()) {
+            String value = result.getValue().get();
+            if (!value.isEmpty()) {
+                valueObject = new ValueObject(value);
+            } else {
+                valueObject = new EmptyValueObject();
+            }
+        } else {
+            valueObject = new NullValueObject();
+        }
+        return valueObject;
     }
 }
 
@@ -253,7 +276,6 @@ class InputExtractionResult {
     private String name;
     private String attributes;
     private String value;
-    private boolean isValueNull = false;
 
     public String getName() {
         return name;
@@ -281,13 +303,5 @@ class InputExtractionResult {
 
     public boolean isLeaf() {
         return !value.contains("<");
-    }
-
-    public boolean isValueNull() {
-        return isValueNull;
-    }
-
-    public void setValueNull(boolean valueNull) {
-        isValueNull = valueNull;
     }
 }
