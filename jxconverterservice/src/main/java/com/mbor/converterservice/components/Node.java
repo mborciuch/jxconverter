@@ -1,6 +1,6 @@
 package com.mbor.converterservice.components;
 
-import java.util.Optional;
+import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 
 public class Node extends AbstractNode {
 
@@ -8,25 +8,21 @@ public class Node extends AbstractNode {
 
     private Printer printer;
 
-    protected String value;
+    protected AbstractValueObject value;
 
     public Node(String elementName, Printer printer) {
         this.elementName = elementName;
         this.printer = printer;
     }
 
-    public Node(String elementName,  String value,  Printer printer) {
+    public Node(String elementName,  AbstractValueObject value,  Printer printer) {
         this.elementName = elementName;
         this.value = value;
         this.printer = printer;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Optional<String> getValue() {
-        return Optional.ofNullable(value);
+    public String getValue() {
+        return value.getValue();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.mbor.converterservice.components;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,5 +19,9 @@ import java.util.Map;
 
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    public boolean hasAttributes(){
+         return !attributes.isEmpty();
     }
 }
