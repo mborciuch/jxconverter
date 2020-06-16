@@ -1,4 +1,4 @@
-package com.mbor.converterservice.factories.printers.json;
+package com.mbor.converterservice.factories.printers.json.list;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
@@ -24,7 +24,7 @@ public class JsonNodeListPrinter implements Printer {
             currentElement = jsonElementListIterator.next();
             stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
             stringBuilder.append(currentElement.print());
-            if (currentElement.getNodeName().startsWith("@") || (currentElement instanceof Node && !currentElement.getNodeName().startsWith("#")) || (currentElement instanceof NodeList && jsonElementListIterator.hasNext())){
+            if (jsonElementListIterator.hasNext()){
                 stringBuilder.append(CommonUtils.COMMA);
             }
             stringBuilder.append(CommonUtils.NEW_LINE);

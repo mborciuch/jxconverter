@@ -25,6 +25,10 @@ public class Node extends AbstractNode {
         return value.getValue();
     }
 
+    public AbstractValueObject getValueObject(){
+        return value;
+    }
+
     @Override
     public String getNodeName() {
         return elementName;

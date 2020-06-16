@@ -92,15 +92,88 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElementTwoEqualLine(){
+    public void buildElementNestedTwoEqualLine(){
         String xmlElement  =
-                "<host>localhost</host>\n" +
-                "<port>8080</port>";
+                "<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "</root>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
-        assertEquals(xmlElement, jsonValue);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\"\n" +
+                "    }\n" +
+                "}", jsonValue);
     }
 
     @Test
+    public void buildElementTwoEqualLine(){
+        String xmlElement  =
+                "<host>localhost</host>\n" +
+                        "<port>8080</port>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\"\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelEqualLines(){
+        String xmlElement  =
+                "<array>\n" +
+                "    <element>localhost</element>\n" +
+                "    <element>8080</element>\n" +
+                "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : [\n" +
+                "        \"localhost\",\n" +
+                "        \"8080\"\n" +
+                "    ]\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelEqualLinesWithAttributes(){
+        String xmlElement  =
+                "<array>\n" +
+                        "    <element attr1 = \"1\">localhost</element>\n" +
+                        "    <element>8080</element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : [\n" +
+                "        {\n" +
+                "            \"@attr1\" : \"1\",\n" +
+                "            \"#element\" : \"localhost\"\n" +
+                "        },\n" +
+                "        \"8080\"\n" +
+                "    ]\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelWithAttributesEqualLines(){
+        String xmlElement  =
+                "<array attr = \"1\">\n" +
+                        "    <element>localhost</element>\n" +
+                        "    <element>8080</element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : [\n" +
+                "        \"localhost\",\n" +
+                "        \"8080\"\n" +
+                "    ]\n" +
+                "}", jsonValue);
+    }
+
+
+    //@Test
     public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
@@ -161,7 +234,7 @@ public class JsonElementTest {
                 "}", jsonValue);
     }
 
-    @Test
+  //  @Test
     public void listWithTheSameElementName(){
         String input = "<element>\n" +
                 "   <deep deepattr = \"deepvalue\">\n" +
