@@ -44,7 +44,7 @@ public class NodeFactory {
     }
 
     public NodeList getNodeListWithAttributes(NodeList nodeList){
-        NodeList newNodeList = new NodeList(nodeList.getNodeName(), abstractPrinterFactory.getNodeListWithAttributesPrinter());
+        NodeList newNodeList = new NodeList(nodeList.getNodeName(), abstractPrinterFactory.getEqualNodeListWithAttributesPrinter());
         List<AbstractNode> abstractNodes = getAbstractNodes(nodeList);
         newNodeList.setList(abstractNodes);
         return newNodeList;

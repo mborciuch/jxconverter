@@ -234,13 +234,18 @@ public class JsonElementTest {
                         "</array>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
-                "    \"array\" : [\n" +
-                "        \"localhost\",\n" +
-                "        \"8080\"\n" +
-                "    ]\n" +
+                "    \"array\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#array\" : [\n" +
+                "            \"localhost\",\n" +
+                "            \"8080\"\n" +
+                "        ]\n" +
+                "    }\n" +
                 "}", jsonValue);
     }
 
+
+    //Array with list as value test
 
 
     public void buildElementWithNestedLines(){
