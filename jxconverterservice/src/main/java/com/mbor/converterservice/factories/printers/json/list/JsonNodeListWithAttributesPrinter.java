@@ -48,6 +48,10 @@ public class JsonNodeListWithAttributesPrinter implements Printer {
         Xml2JsonConverter.decrementCurrentIndentation();
         stringBuilder.append(EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
         stringBuilder.append(JSON_CLOSE_SIGN);
+        Xml2JsonConverter.decrementCurrentIndentation();
+        stringBuilder.append(CommonUtils.NEW_LINE);
+        stringBuilder.append(EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
+        stringBuilder.append(JSON_CLOSE_SIGN);
         return stringBuilder.toString();
     }
 

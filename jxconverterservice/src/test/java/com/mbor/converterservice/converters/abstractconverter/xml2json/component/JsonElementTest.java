@@ -147,8 +147,9 @@ public class JsonElementTest {
                 "            \"list\" : {\n" +
                 "                \"el\" : \"1\"\n" +
                 "            }\n" +
-                "        }\n" +
-                "    }", jsonValue);
+                "        }\n"+
+                "    }\n" +
+                "}", jsonValue);
     }
 
 
@@ -241,7 +242,7 @@ public class JsonElementTest {
     }
 
 
-    @Test
+
     public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
