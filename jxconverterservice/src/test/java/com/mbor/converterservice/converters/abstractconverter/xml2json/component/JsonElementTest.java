@@ -269,7 +269,7 @@ public class JsonElementTest {
     }
 
 
-
+    @Test
     public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
@@ -330,7 +330,7 @@ public class JsonElementTest {
                 "}", jsonValue);
     }
 
-  //  @Test
+    @Test
     public void listWithTheSameElementName(){
         String input = "<element>\n" +
                 "   <deep deepattr = \"deepvalue\">\n" +
@@ -340,10 +340,9 @@ public class JsonElementTest {
                 "   </deep>\n" +
                 "</element>\n" ;
         String result = xml2JsonConverter.convert(input);
-        System.out.println(result);
     }
 
-    //Not Nested Element
+    @Test
     public void buildElement_WithListAndNestedLines() {
         String xmlElement  =  "<root>\n" +
                 "    <transaction>\n" +
@@ -371,13 +370,13 @@ public class JsonElementTest {
                 "                <attr3>value4</attr3>\n" +
                 "                <elem>value5</elem>\n" +
                 "            </element>\n" +
-//                "            <element>\n" +
-//                "                <deep deepattr = \"deepvalue\">\n" +
-//                "                    <element>1</element>\n" +
-//                "                    <element>2</element>\n" +
-//                "                    <element>3</element>\n" +
-//                "                </deep>\n" +
-//                "            </element>\n" +
+                "            <element>\n" +
+                "                <deep deepattr = \"deepvalue\">\n" +
+                "                    <element>1</element>\n" +
+                "                    <element>2</element>\n" +
+                "                    <element>3</element>\n" +
+                "                </deep>\n" +
+                "            </element>\n" +
                 "        </array2>\n" +
                 "        <inner1>\n" +
                 "            <inner2>\n" +
