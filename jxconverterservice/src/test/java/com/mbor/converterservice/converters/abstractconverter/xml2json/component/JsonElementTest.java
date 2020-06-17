@@ -108,7 +108,75 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElementTwoEqualLine(){
+    public void buildElementNestedTwoTheSameLevelLinesAndNestedList(){
+        String xmlElement  = "<root>\n" +
+                        "    <host>localhost</host>\n" +
+                        "    <port>8080</port>\n" +
+                        "    <list>\n"+
+                        "       <el>1</el>\n" +
+                        "    </list>\n" +
+                        "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\",\n" +
+                "        \"list\" : {\n" +
+                "            \"el\" : \"1\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementListWithAttributesNestedList(){
+        String xmlElement  = "<root attr=\"1\">\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n"+
+                "       <el>1</el>\n" +
+                "    </list>\n" +
+                "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#root\" : {\n" +
+                "            \"localhost\",\n" +
+                "            \"8080\",\n" +
+                "            \"list\" : {\n" +
+                "                \"el\" : \"1\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }", jsonValue);
+    }
+
+
+    @Test
+    public void buildElementNestedTwoTheSameLevelLinesAndNestedListWithTwoElements(){
+        String xmlElement  = "<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n"+
+                "       <el>1</el>\n" +
+                "       <el2>2</el2>\n" +
+                "    </list>\n" +
+                "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\",\n" +
+                "        \"list\" : {\n" +
+                "            \"el\" : \"1\",\n" +
+                "            \"el2\" : \"2\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelLine(){
         String xmlElement  =
                 "<host>localhost</host>\n" +
                         "<port>8080</port>";
@@ -173,7 +241,7 @@ public class JsonElementTest {
     }
 
 
-    //@Test
+    @Test
     public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +

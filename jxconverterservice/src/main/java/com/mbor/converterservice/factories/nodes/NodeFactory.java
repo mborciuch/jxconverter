@@ -34,19 +34,51 @@ public class NodeFactory {
         return new Node(elementName,  abstractValueObject, abstractPrinterFactory.getNodeWithAttributesPrinter());
     }
 
-    public Node getNodeWithAttributes(String elementName){
-        return new Node(elementName, abstractPrinterFactory.getNodeWithAttributesPrinter());
-    }
 
     public NodeList getNodeList(String elementName){
         return new NodeList(elementName, abstractPrinterFactory.getNodeListPrinter());
     }
 
-    public  NodeList getEqualNodeList(String elementName){
-       return new NodeList(elementName, abstractPrinterFactory.getNodeEqualListPrinter());
+    public NodeList getNodeListWithAttributes(String elementName){
+        return new  NodeList(elementName, abstractPrinterFactory.getNodeListWithAttributesPrinter());
     }
+
+    public NodeList getNodeListWithAttributes(NodeList nodeList){
+        NodeList newNodeList = new NodeList(nodeList.getNodeName(), abstractPrinterFactory.getNodeListWithAttributesPrinter());
+        List<AbstractNode> abstractNodes = getAbstractNodes(nodeList);
+        newNodeList.setList(abstractNodes);
+        return newNodeList;
+    }
+
+
     public  NodeList getEqualNodeList(NodeList nodeList){
         NodeList equalNodeList =  new NodeList(nodeList.getNodeName(), abstractPrinterFactory.getNodeEqualListPrinter());
+        List<AbstractNode> abstractNodes = getAbstractNodes(nodeList);
+        equalNodeList.setList(abstractNodes);
+        return equalNodeList;
+    }
+
+    public NodeList getEqualNodeListWithAttributes(NodeList nodeList) {
+        NodeList equalNodeList = new NodeList(nodeList.getNodeName(), abstractPrinterFactory.getEqualNodeListWithAttributesPrinter());
+        List<AbstractNode> abstractNodes = getAbstractNodes(nodeList);
+        if(nodeList.getAttributes() == null){
+            throw new RuntimeException("NodeList should have attributes");
+        }
+        equalNodeList.setList(abstractNodes);
+        equalNodeList.setAttributes(nodeList.getAttributes());
+        return equalNodeList;
+    }
+
+    public Node getNodeInEqualList(Node node){
+        return new Node(node.getNodeName(), node.getValueObject(), abstractPrinterFactory.getNodeInEqualListPrinter());
+    }
+
+    public Node getNodeWithAttributesInEqualList(Node node){
+        Node newNode =  new Node(node.getNodeName(), node.getValueObject(), abstractPrinterFactory.getNodeWithAttributesInEqualListPrinter());
+        newNode.setAttributes(node.getAttributes());
+        return newNode;
+    }
+    private List<AbstractNode> getAbstractNodes(NodeList nodeList) {
         List<AbstractNode> abstractNodes = new LinkedList<>();
         nodeList.forEach(element ->{
             if(element instanceof Node){
@@ -58,17 +90,7 @@ public class NodeFactory {
             }
             abstractNodes.add(element);
         });
-        equalNodeList.setList(abstractNodes);
-        return equalNodeList;
-    }
-
-    public Node getNodeInEqualList(Node node){
-        return new Node(node.getNodeName(), node.getValueObject(), abstractPrinterFactory.getNodeInEqualListPrinter());
-    }
-    public Node getNodeWithAttributesInEqualList(Node node){
-        Node newNode =  new Node(node.getNodeName(), node.getValueObject(), abstractPrinterFactory.getNodeWithAttributesInEqualListPrinter());
-        newNode.setAttributes(node.getAttributes());
-        return newNode;
+        return abstractNodes;
     }
 
 

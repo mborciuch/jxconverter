@@ -84,14 +84,36 @@ public class Xml2JsonConverter extends AbstractConverter {
                 }
             } else {
                     String extractedValue = result.getValue().get();
-                    NodeList nodeList = (NodeList) prepareStructure(extractedValue);
-                    nodeList.setNodeName(elementName);
-                    if(isListWithEqualElement(nodeList.getList())){
-                        nodeList = getNodeFactory().getEqualNodeList(nodeList);
+                    NodeList nodeList;
+                    AbstractNode abstractNode =  prepareStructure(extractedValue);
+                    if(abstractNode instanceof NodeList) {
+                        nodeList = (NodeList) abstractNode;
+                        nodeList.setNodeName(elementName);
+                        if (isListWithEqualElement(nodeList.getList())) {
+                            if(result.getAttributes().isPresent()){
+                                nodeList = getNodeFactory().getEqualNodeListWithAttributes(nodeList);
+                            } else {
+                                nodeList = getNodeFactory().getEqualNodeList(nodeList);
+                            }
+                        } else {
+                            if(result.getAttributes().isPresent()){
+                                Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                                nodeList = getNodeFactory().getNodeListWithAttributes(nodeList);
+                                nodeList.setAttributes(attributes);
+                            }
+                        }
+                    } else {
+                        if(result.getAttributes().isPresent()){
+                            Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                            nodeList = getNodeFactory().getNodeListWithAttributes(elementName);
+                            nodeList.setAttributes(attributes);
+                        } else {
+                            nodeList = getNodeFactory().getNodeList(elementName);
+                        }
+                        nodeList.addAbstractElement(abstractNode);
                     }
-                    return nodeList;
+                return nodeList;
                 }
-
             }
         }
 

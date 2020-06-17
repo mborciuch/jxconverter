@@ -3,7 +3,9 @@ package com.mbor.converterservice.factories.printers;
 import com.mbor.converterservice.components.Printer;
 import com.mbor.converterservice.factories.printers.json.*;
 import com.mbor.converterservice.factories.printers.json.equallist.JsonEqualNodeListPrinter;
+import com.mbor.converterservice.factories.printers.json.equallist.JsonEqualNodeListWithAttributesPrinter;
 import com.mbor.converterservice.factories.printers.json.list.JsonNodeListPrinter;
+import com.mbor.converterservice.factories.printers.json.list.JsonNodeListWithAttributesPrinter;
 import com.mbor.converterservice.factories.printers.json.node.JsonNodeInEqualListPrinter;
 import com.mbor.converterservice.factories.printers.json.node.JsonNodePrinter;
 import com.mbor.converterservice.factories.printers.json.node.JsonNodeWithAttributesInEqualListPrinter;
@@ -42,6 +44,11 @@ public class JsonPrinterFactory extends AbstractPrinterFactory {
     }
 
     @Override
+    public Printer getNodeListWithAttributesPrinter() {
+        return new JsonNodeListWithAttributesPrinter();
+    }
+
+    @Override
     public Printer getNodeEqualListPrinter() {
         return new JsonEqualNodeListPrinter();
     }
@@ -58,4 +65,9 @@ public class JsonPrinterFactory extends AbstractPrinterFactory {
 
     @Override
     public Printer getNodeWithAttributesInEqualListPrinter(){return new JsonNodeWithAttributesInEqualListPrinter();}
+
+    @Override
+    public Printer getEqualNodeListWithAttributesPrinter() {
+        return new JsonEqualNodeListWithAttributesPrinter();
+    }
 }
