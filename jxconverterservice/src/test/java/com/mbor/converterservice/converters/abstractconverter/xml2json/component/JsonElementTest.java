@@ -129,7 +129,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElementListWithAttributesNestedList(){
+    public void buildElementListWithAttributesAndNestedList(){
         String xmlElement  = "<root attr=\"1\">\n" +
                 "    <host>localhost</host>\n" +
                 "    <port>8080</port>\n" +
@@ -244,8 +244,30 @@ public class JsonElementTest {
                 "}", jsonValue);
     }
 
-
     //Array with list as value test
+    @Test
+    public void buildElementTheSameLevelWithAttributesEqualLinesWithNestedList(){
+        String xmlElement  =
+                "<array attr = \"1\">\n" +
+                        "    <element>localhost</element>\n" +
+                        "    <element>\n" +
+                        "       <el>1</el>\n" +
+                        "    </element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#array\" : [\n" +
+                "            \"localhost\",\n" +
+                "            \"element\" : {\n" +
+                "                \"el\" : \"1\"\n" +
+                "            }\n" +
+                "        ]\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
 
 
     public void buildElementWithNestedLines(){

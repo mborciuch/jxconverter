@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class Xml2JsonConverter extends AbstractConverter {
 
-    private static final String XML_ONE_LINE = "(<(.+?)\\s?([^<>].+?)?>)(.+?)?<\\/\\2>|<([\\w\\d]+)\\s?(.+)?\\/>";
+    private static final String XML_ONE_LINE = "(<(.+)\\s?([^<>].+?)?>)(.+?)?<\\/\\2>|<([\\w\\d]+)\\s?(.+)?\\/>";
     private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
     private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
     private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
@@ -91,7 +91,9 @@ public class Xml2JsonConverter extends AbstractConverter {
                         nodeList.setNodeName(elementName);
                         if (isListWithEqualElement(nodeList.getList())) {
                             if(result.getAttributes().isPresent()){
+                                Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
                                 nodeList = getNodeFactory().getEqualNodeListWithAttributes(nodeList);
+                                nodeList.setAttributes(attributes);
                             } else {
                                 nodeList = getNodeFactory().getEqualNodeList(nodeList);
                             }
