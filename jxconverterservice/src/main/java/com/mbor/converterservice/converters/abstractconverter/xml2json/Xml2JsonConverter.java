@@ -19,16 +19,8 @@ import java.util.stream.Collectors;
 public class Xml2JsonConverter extends AbstractConverter {
 
     private static final String XML_ONE_LINE = "(<(.+)\\s?([^<>].+?)?>)(.+)?<\\/\\2>|(<([\\w\\d]+)\\s?((?=\\s)(.+?))?\\s?\\/>?)";
-    private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
-    private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
-    private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
-    private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
     private static final String ELEMENT_ATTRIBUTES = "([\\w]+)\\s?=\\s?([\\w\\\"]+)";
-    private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s?=\\s?\"(.*?)\"";
-    private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
 
-    private static final String ATTRIBUTE_SIGN = "@";
-    private static final String VALUE_SIGN = "#";
 
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
