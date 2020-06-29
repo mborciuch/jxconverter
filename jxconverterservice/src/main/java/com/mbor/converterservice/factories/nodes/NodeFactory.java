@@ -3,7 +3,7 @@ package com.mbor.converterservice.factories.nodes;
 
 import com.mbor.converterservice.components.*;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
-import com.mbor.converterservice.components.ValueObject.XmlNullValueObject;
+import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlNullValueObject;
 import com.mbor.converterservice.factories.printers.AbstractPrinterFactory;
 
 import java.util.LinkedList;

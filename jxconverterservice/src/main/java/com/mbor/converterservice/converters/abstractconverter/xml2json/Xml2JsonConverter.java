@@ -5,8 +5,8 @@ import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.components.ValueObject.EmptyValueObject;
-import com.mbor.converterservice.components.ValueObject.JsonNullValueObject;
-import com.mbor.converterservice.components.ValueObject.JsonValueObject;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonNullValueObject;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
