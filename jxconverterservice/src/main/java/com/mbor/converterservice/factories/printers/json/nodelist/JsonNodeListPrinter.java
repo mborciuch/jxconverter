@@ -1,7 +1,6 @@
-package com.mbor.converterservice.factories.printers.json.list;
+package com.mbor.converterservice.factories.printers.json.nodelist;
 
 import com.mbor.converterservice.components.AbstractNode;
-import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.Printer;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;

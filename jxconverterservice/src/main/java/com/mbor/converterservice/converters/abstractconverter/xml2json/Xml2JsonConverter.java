@@ -1,13 +1,12 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
 import com.mbor.converterservice.components.AbstractNode;
-import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.components.ValueObject.EmptyValueObject;
-import com.mbor.converterservice.components.ValueObject.NullValueObject;
-import com.mbor.converterservice.components.ValueObject.ValueObject;
+import com.mbor.converterservice.components.ValueObject.JsonNullValueObject;
+import com.mbor.converterservice.components.ValueObject.JsonValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
@@ -50,17 +49,16 @@ public class Xml2JsonConverter extends AbstractConverter {
     private AbstractNode prepareStructure(String input) {
         String elementName;
         AbstractValueObject valueObject;
-        List<InputExtractionResult> resultList = extractInput(input);
+        List<XmlInputExtractionResult> resultList = extractInput(input);
         if(isInputExtractionResultTheSameLevelList(resultList)){
                 elementName = "root";
                 NodeList nodeList = getNodeFactory().getNodeList(elementName);
                 resultList.forEach(element ->
-                        nodeList.addAbstractElement(prepareStructure(element.getWholeLine())
-                        ));
+                        nodeList.addAbstractElement(prepareStructure(element.getWholeLine()))
+                );
                 return nodeList;
-
         } else {
-            InputExtractionResult result = resultList.get(0);
+            XmlInputExtractionResult result = resultList.get(0);
             elementName = result.getName();
             if (isInputExtractionResultLeaf(result)) {
                 Node node;
@@ -111,34 +109,34 @@ public class Xml2JsonConverter extends AbstractConverter {
             }
         }
 
-    private List<InputExtractionResult> extractInput(String input) {
+    private List<XmlInputExtractionResult> extractInput(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
-        List<InputExtractionResult> resultList = new LinkedList<>();
+        List<XmlInputExtractionResult> resultList = new LinkedList<>();
         if (!elementNameMatcher.find()) {
             throw new RuntimeException("Invalid input line: " + input);
         }
         elementNameMatcher.reset();
         while (elementNameMatcher.find()) {
-            InputExtractionResult inputExtractionResult = new InputExtractionResult();
-            inputExtractionResult.setWholeLine(elementNameMatcher.group(0));
+            XmlInputExtractionResult xmlInputExtractionResult = new XmlInputExtractionResult();
+            xmlInputExtractionResult.setWholeLine(elementNameMatcher.group(0));
             if (elementNameMatcher.group(5) == null) {
-                inputExtractionResult.setName(elementNameMatcher.group(2));
+                xmlInputExtractionResult.setName(elementNameMatcher.group(2));
                 if (elementNameMatcher.group(3) != null) {
-                    inputExtractionResult.setAttributes(elementNameMatcher.group(3));
+                    xmlInputExtractionResult.setAttributes(elementNameMatcher.group(3));
                 }
                 if (elementNameMatcher.group(4) != null) {
-                    inputExtractionResult.setValue(elementNameMatcher.group(4));
+                    xmlInputExtractionResult.setValue(elementNameMatcher.group(4));
                 } else {
-                    inputExtractionResult.setValue("");
+                    xmlInputExtractionResult.setValue("");
                 }
             } else {
-                inputExtractionResult.setName(elementNameMatcher.group(6));
+                xmlInputExtractionResult.setName(elementNameMatcher.group(6));
                 if (elementNameMatcher.group(7) != null) {
-                    inputExtractionResult.setAttributes(elementNameMatcher.group(7));
+                    xmlInputExtractionResult.setAttributes(elementNameMatcher.group(7));
                 }
             }
-            resultList.add(inputExtractionResult);
+            resultList.add(xmlInputExtractionResult);
         }
         return resultList;
     }
@@ -162,39 +160,9 @@ public class Xml2JsonConverter extends AbstractConverter {
         return input.replaceAll("\\n", "").replaceAll("\\s{2,}", "");
     }
 
-    private ComponentNode prepareComponentNode(AbstractNode abstractNode) {
-        ComponentNode componentNode;
-        if (abstractNode instanceof Node) {
-            if(abstractNode.hasAttributes()){
-                componentNode = getNodeFactory().getComponentNodeWithNodeList();
-                componentNode.setAbstractNode(abstractNode);
-            } else {
-                componentNode = getNodeFactory().getComponentNodeWithNode();
-                componentNode.setAbstractNode(abstractNode);
-            }
-        } else {
-            componentNode = getNodeFactory().getComponentNodeWithNodeList();
-            componentNode.setAbstractNode(abstractNode);
-        }
-        return componentNode;
-    }
 
-    private AbstractValueObject prepareValueObject(InputExtractionResult result){
-        AbstractValueObject valueObject;
-        if (result.getValue().isPresent()) {
-            String value = result.getValue().get();
-            if (!value.isEmpty()) {
-                valueObject = new ValueObject(value);
-            } else {
-                valueObject = new EmptyValueObject();
-            }
-        } else {
-            valueObject = new NullValueObject();
-        }
-        return valueObject;
-    }
 
-    private boolean isInputExtractionResultLeaf(InputExtractionResult result){
+    private boolean isInputExtractionResultLeaf(XmlInputExtractionResult result){
         String[] xmlSigns = {"<", ">", "/"};
         if(result.getValue().isPresent()){
             String value = result.getValue().get();
@@ -208,7 +176,7 @@ public class Xml2JsonConverter extends AbstractConverter {
         }
     }
 
-    private boolean isInputExtractionResultTheSameLevelList(List<InputExtractionResult> resultList){
+    private boolean isInputExtractionResultTheSameLevelList(List<XmlInputExtractionResult> resultList){
         if(resultList.size() == 0){
             throw new RuntimeException("ExtractionResultList is Empty");
         }
@@ -220,48 +188,19 @@ public class Xml2JsonConverter extends AbstractConverter {
         return new HashSet<>(nodeNames).size() != resultList.size();
     }
 
-}
-
-class InputExtractionResult {
-
-    private String wholeLine;
-    private String name;
-    private String attributes;
-    private String value;
-
-    public String getWholeLine() {
-        return wholeLine;
-    }
-
-    public void setWholeLine(String wholeLine) {
-        this.wholeLine = wholeLine;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Optional<String> getAttributes() {
-        return Optional.ofNullable(attributes);
-    }
-
-    public void setAttributes(String attributes) {
-        this.attributes = attributes;
-    }
-
-    public Optional<String> getValue() {
-        return Optional.ofNullable(value);
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public boolean isLeaf() {
-        return !value.contains("<");
+    protected AbstractValueObject prepareValueObject(XmlInputExtractionResult result){
+        AbstractValueObject valueObject;
+        if (result.getValue().isPresent()) {
+            String value = result.getValue().get();
+            if (!value.isEmpty()) {
+                valueObject = new JsonValueObject(value);
+            } else {
+                valueObject = new EmptyValueObject();
+            }
+        } else {
+            valueObject = new JsonNullValueObject();
+        }
+        return valueObject;
     }
 }
+

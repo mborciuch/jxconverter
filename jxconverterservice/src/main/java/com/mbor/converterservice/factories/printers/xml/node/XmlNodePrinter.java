@@ -1,4 +1,4 @@
-package com.mbor.converterservice.factories.printers.xml;
+package com.mbor.converterservice.factories.printers.xml.node;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
@@ -6,26 +6,24 @@ import com.mbor.converterservice.components.Printer;
 
 import java.util.Map;
 
-import static com.mbor.converterservice.utils.XmlUtils.*;
+import static com.mbor.converterservice.utils.XmlUtils.XML_CLOSE_TAG;
+import static com.mbor.converterservice.utils.XmlUtils.XML_OPEN_TAG;
 
-public class XMLNodeWithNoValuePrinter implements Printer {
+public abstract class XmlNodePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {
         StringBuilder stringBuilder = new StringBuilder();
         Node xmlLine = (Node) abstractNode;
         String nodeName;
-        if (xmlLine.getNodeName().startsWith("#")) {
-            nodeName = xmlLine.getNodeName().replaceFirst("#", "");
-        } else {
-            nodeName = xmlLine.getNodeName();
-        }
+        nodeName = xmlLine.getNodeName();
+
         stringBuilder.append(XML_OPEN_TAG).append(nodeName);
         if (!xmlLine.getAttributes().isEmpty()) {
             stringBuilder
                     .append(addAttributes(xmlLine));
         }
-        stringBuilder.append(XML_CLOSE_EMPTY_ELEMENT_TAG);
+        stringBuilder.append(printValue(xmlLine));
         return stringBuilder.toString();
     }
 
@@ -45,4 +43,5 @@ public class XMLNodeWithNoValuePrinter implements Printer {
         return stringBuilder.toString();
     }
 
+    protected abstract String printValue(Node xmlLine);
 }

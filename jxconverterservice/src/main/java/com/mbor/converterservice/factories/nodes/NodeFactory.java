@@ -1,11 +1,9 @@
 package com.mbor.converterservice.factories.nodes;
 
 
-import com.mbor.converterservice.components.AbstractNode;
-import com.mbor.converterservice.components.ComponentNode;
-import com.mbor.converterservice.components.Node;
-import com.mbor.converterservice.components.NodeList;
+import com.mbor.converterservice.components.*;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
+import com.mbor.converterservice.components.ValueObject.XmlNullValueObject;
 import com.mbor.converterservice.factories.printers.AbstractPrinterFactory;
 
 import java.util.LinkedList;
@@ -28,7 +26,13 @@ public class NodeFactory {
     }
 
     public Node getNode(String elementName, AbstractValueObject abstractValueObject) {
-        return new Node(elementName, abstractValueObject,  abstractPrinterFactory.getNodePrinter());
+        Printer printer;
+        if(abstractValueObject instanceof XmlNullValueObject){
+            printer = abstractPrinterFactory.getNodeWithNoValuePrinter();
+        } else {
+            printer = abstractPrinterFactory.getNodeWithValuePrinter();
+        }
+        return new Node(elementName, abstractValueObject,  printer);
     }
     public Node getNodeWithAttributes(String elementName, AbstractValueObject abstractValueObject){
         return new Node(elementName,  abstractValueObject, abstractPrinterFactory.getNodeWithAttributesPrinter());

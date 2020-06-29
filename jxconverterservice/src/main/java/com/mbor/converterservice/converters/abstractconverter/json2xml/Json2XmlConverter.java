@@ -2,18 +2,16 @@ package com.mbor.converterservice.converters.abstractconverter.json2xml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
-import com.mbor.converterservice.components.ValueObject.NullValueObject;
+import com.mbor.converterservice.components.ValueObject.*;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.exception.ProcessingException;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import java.util.*;
 
 public class Json2XmlConverter extends AbstractConverter {
 
@@ -26,43 +24,23 @@ public class Json2XmlConverter extends AbstractConverter {
 
     @Override
     public String convert(String input) {
-        LinkedHashMap<String, Object> rootMap = null;
-        ComponentNode componentNode = null;
-        try {
-            rootMap = (LinkedHashMap<String, Object>) objectMapper.readValue(input, Map.class);
-            componentNode = prepareStructure(rootMap);
-        } catch (JsonProcessingException | ProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return componentNode.print();
+        AbstractNode resultTree = prepareStructure(input);
+        return prepareComponentNode(resultTree).print();
     }
 
-
-    private ComponentNode prepareStructure(Map<String, Object> rootMap) throws ProcessingException {
-        ComponentNode componentNode;
-        NodeList nodes;
-        if (rootMap.keySet().size() > 1) {
-            componentNode = getNodeFactory().getComponentNodeWithNodeList();
-            componentNode.setAbstractNode(prepareNodeList("root", rootMap));
-        } else {
-            String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
-            if (rootMap.get(key) instanceof String || rootMap.get(key) == null) {
-                componentNode = prepareNodeStructure(key, rootMap);
-            } else {
-                Map<String, Object> nestedMap = (Map<String, Object>) rootMap.get(key);
-                String nestedMapFirstKey = nestedMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
-                if (nestedMapFirstKey.startsWith("@")) {
-                    componentNode = prepareNodeWithAttributesStructure(key, nestedMap);
-                } else {
-                    componentNode = prepareListStructure(key, nestedMap);
-                }
-            }
-        }
-        return componentNode;
+    private AbstractNode prepareStructure(String input) {
+        String elementName;
+        List<JsonInputExtractionResult> resultList = extractInput(input);
+        JsonInputExtractionResult result = resultList.get(0);
+        elementName = result.getName();
+        AbstractValueObject valueObject;
+        valueObject = prepareValueObject(result);
+        Node node;
+        node = getNodeFactory().getNode(elementName, valueObject);
+        return node;
     }
 
-    private ComponentNode prepareListStructure(String key, Map<String, Object> rootMap) throws ProcessingException {
+    private ComponentNode prepareListStructure(String key, Map<String, Object> rootMap) {
 
         ComponentNode componentNode = getNodeFactory().getComponentNodeWithNodeList();
         NodeList nodes = getNodeFactory().getNodeList(key);
@@ -101,7 +79,7 @@ public class Json2XmlConverter extends AbstractConverter {
         String innerKey = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
         NodeList nodes = getNodeFactory().getNodeList(key);
         Iterator<Map.Entry<String, Object>> entryIterator = rootMap.entrySet().iterator();
-        while (entryIterator.hasNext()){
+        while (entryIterator.hasNext()) {
             Map.Entry<String, Object> currentEntry = entryIterator.next();
             if (currentEntry.getValue() instanceof String || currentEntry.getValue() == null) {
                 Map<String, Object> tempMap = new LinkedHashMap<>();
@@ -121,7 +99,7 @@ public class Json2XmlConverter extends AbstractConverter {
         return nodes;
     }
 
-    private ComponentNode prepareNodeWithAttributesStructure(String key, Map<String, Object> rootMap) throws ProcessingException {
+    private ComponentNode prepareNodeWithAttributesStructure(String key, Map<String, Object> rootMap) {
         ComponentNode componentNode = getNodeFactory().getComponentNodeWithNode();
         Node node = prepareNodeWithAttributes(rootMap);
         componentNode.setNodeName(key);
@@ -129,20 +107,20 @@ public class Json2XmlConverter extends AbstractConverter {
         return componentNode;
     }
 
-    private Node prepareNode(Map<String, Object> rootMap){
+    private Node prepareNode(Map<String, Object> rootMap) {
         String key = rootMap.keySet().stream().findFirst().orElseThrow(RuntimeException::new);
         Node node;
         if (rootMap.get(key) != null) {
 
             //todo
-            node = getNodeFactory().getNode(key, new NullValueObject());
+            node = getNodeFactory().getNode(key, new JsonNullValueObject());
         } else {
-            node = getNodeFactory().getNode(key, new NullValueObject());
+            node = getNodeFactory().getNode(key, new JsonNullValueObject());
         }
         return node;
     }
 
-    private Node prepareNodeWithAttributes(Map<String, Object> rootMap) throws ProcessingException {
+    private Node prepareNodeWithAttributes(Map<String, Object> rootMap) {
         Node node = null;
         Iterator<Map.Entry<String, Object>> iterator = rootMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -150,9 +128,9 @@ public class Json2XmlConverter extends AbstractConverter {
             if (!iterator.hasNext()) {
                 if (currentEntry.getValue() != null) {
                     //todo
-                    node = getNodeFactory().getNode(currentEntry.getKey(), new NullValueObject());
+                    node = getNodeFactory().getNode(currentEntry.getKey(), new JsonNullValueObject());
                 } else {
-                    node = getNodeFactory().getNode(currentEntry.getKey(), new NullValueObject());
+                    node = getNodeFactory().getNode(currentEntry.getKey(), new JsonNullValueObject());
                 }
             }
         }
@@ -164,7 +142,7 @@ public class Json2XmlConverter extends AbstractConverter {
                 if ((currentEntry.getValue() instanceof Map)) {
                     throw new ProcessingException("Attribute should be String or Number");
                 }
-                String value =  currentEntry.getValue().toString();
+                String value = currentEntry.getValue().toString();
                 attributes.put(currentEntry.getKey(), value);
             } else {
                 break;
@@ -172,6 +150,40 @@ public class Json2XmlConverter extends AbstractConverter {
         }
         node.setAttributes(attributes);
         return node;
+    }
+
+    private List<JsonInputExtractionResult> extractInput(String input) {
+        LinkedHashMap<String, Object> rootMap;
+        try {
+            rootMap = (LinkedHashMap<String, Object>) objectMapper.readValue(input, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new ProcessingException("Error during processing input Json:" + e.getMessage());
+        }
+        List<JsonInputExtractionResult> resultList = new LinkedList<>();
+        for (Map.Entry<String, Object> entry : rootMap.entrySet()) {
+            JsonInputExtractionResult jsonInputExtractionResult = new JsonInputExtractionResult();
+            jsonInputExtractionResult.setName(entry.getKey());
+            jsonInputExtractionResult.setValue(entry.getValue());
+            jsonInputExtractionResult.setWholeLine(entry);
+            resultList.add(jsonInputExtractionResult);
+        }
+
+        return resultList;
+    }
+
+    protected AbstractValueObject prepareValueObject(JsonInputExtractionResult result){
+        AbstractValueObject valueObject;
+        if (result.getValue() != null) {
+            String value = (String) result.getValue();
+            if (!value.isEmpty()) {
+                valueObject = new XmlValueObject(value);
+            } else {
+                valueObject = new EmptyValueObject();
+            }
+        } else {
+            valueObject = new XmlNullValueObject();
+        }
+        return valueObject;
     }
 }
 

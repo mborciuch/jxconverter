@@ -1,9 +1,9 @@
 package com.mbor.converterservice.components.ValueObject;
 
-public class ValueObject extends AbstractValueObject {
+public class JsonValueObject extends AbstractValueObject {
     private String value;
 
-    public ValueObject(String value) {
+    public JsonValueObject(String value) {
         this.value = value;
     }
 

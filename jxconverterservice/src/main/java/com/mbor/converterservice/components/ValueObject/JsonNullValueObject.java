@@ -1,6 +1,6 @@
 package com.mbor.converterservice.components.ValueObject;
 
-public class NullValueObject extends AbstractValueObject {
+public class JsonNullValueObject extends AbstractValueObject {
 
     @Override
     public String getValue() {
