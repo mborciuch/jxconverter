@@ -1,7 +1,12 @@
 package com.mbor.converterservice.factories.printers;
 
 import com.mbor.converterservice.components.Printer;
-import com.mbor.converterservice.factories.printers.xml.*;
+import com.mbor.converterservice.factories.printers.xml.XMLComponentNodeWithNodeListPrinter;
+import com.mbor.converterservice.factories.printers.xml.XMLComponentNodeWithNodePrinter;
+import com.mbor.converterservice.factories.printers.xml.XMLEqualNodeListPrinter;
+import com.mbor.converterservice.factories.printers.xml.node.XMLNodeWithNoValuePrinter;
+import com.mbor.converterservice.factories.printers.xml.node.XMLNodeWithValuePrinter;
+import com.mbor.converterservice.factories.printers.xml.nodelist.XMLNodeListPrinter;
 
 public class XmlPrinterFactory extends AbstractPrinterFactory {
     @Override
@@ -20,6 +25,11 @@ public class XmlPrinterFactory extends AbstractPrinterFactory {
     }
 
     @Override
+    public Printer getNodePrinter() {
+        return new XMLNodeWithValuePrinter();
+    }
+
+    @Override
     public Printer getNodeWithValuePrinter() {
         return new XMLNodeWithValuePrinter();
     }
@@ -32,5 +42,30 @@ public class XmlPrinterFactory extends AbstractPrinterFactory {
     @Override
     public Printer getNodeEqualListPrinter() {
         return new XMLEqualNodeListPrinter();
+    }
+
+    @Override
+    public Printer getNodeWithAttributesPrinter() {
+        return null;
+    }
+
+    @Override
+    public Printer getNodeInEqualListPrinter() {
+        return null;
+    }
+
+    @Override
+    public Printer getNodeWithAttributesInEqualListPrinter() {
+        return null;
+    }
+
+    @Override
+    public Printer getNodeListWithAttributesPrinter() {
+        return null;
+    }
+
+    @Override
+    public Printer getEqualNodeListWithAttributesPrinter() {
+        return null;
     }
 }

@@ -13,8 +13,4 @@ public class Xml2jsonConverterFactory {
         NodeFactory nodeFactory = new NodeFactory(jsonNodePrinterFactory);
         return new Xml2JsonConverter(nodeFactory);
     }
-
-
-
-
 }

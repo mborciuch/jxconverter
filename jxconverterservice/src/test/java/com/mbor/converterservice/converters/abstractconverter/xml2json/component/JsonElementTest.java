@@ -1,8 +1,8 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json.component;
 
-import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
-import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
+import com.mbor.converterservice.factories.nodes.NodeFactory;
+import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +34,14 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildEmptyElementSingleTag(){
+    public void buildNullElementSingleTag(){
         String xmlElement  =  "<success/>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\"success\" : null}", jsonValue);
     }
 
     @Test
-    public void buildElement_NotEmptyElement_WithAttribute(){
+    public void buildElementNotEmptyElementWithAttribute(){
         String xmlElement  =  "<employee department = \"manager\">Garry Smith</employee>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -53,7 +53,7 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_NotEmptyElement_WithAttributes(){
+    public void buildElementNotEmptyElementWithAttributes(){
         String xmlElement  =  "<employee role =\"leader\" department=\"manager\">Garry Smith</employee>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -66,7 +66,20 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_EmptyElement_WithAttributes(){
+    public void buildElementEmptyElementWithAttributes(){
+        String xmlElement  =  "<employee role =\"leader\" department=\"manager\"></employee>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"employee\" : {\n" +
+                "        \"@role\" : \"leader\",\n" +
+                "        \"@department\" : \"manager\",\n" +
+                "        \"#employee\" : \"\"\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementNullElementWithAttributes(){
         String xmlElement  =  "<person rate=\"1\" name=\"Torvalds\"/>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +
@@ -79,7 +92,185 @@ public class JsonElementTest {
     }
 
     @Test
-    public void buildElement_WithNestedLines(){
+    public void buildElementNestedTwoEqualLine(){
+        String xmlElement  =
+                "<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\"\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementNestedTwoTheSameLevelLinesAndNestedList(){
+        String xmlElement  = "<root>\n" +
+                        "    <host>localhost</host>\n" +
+                        "    <port>8080</port>\n" +
+                        "    <list>\n"+
+                        "       <el>1</el>\n" +
+                        "    </list>\n" +
+                        "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\",\n" +
+                "        \"list\" : {\n" +
+                "            \"el\" : \"1\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementListWithAttributesAndNestedList(){
+        String xmlElement  = "<root attr=\"1\">\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n"+
+                "       <el>1</el>\n" +
+                "    </list>\n" +
+                "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#root\" : {\n" +
+                "            \"localhost\",\n" +
+                "            \"8080\",\n" +
+                "            \"list\" : {\n" +
+                "                \"el\" : \"1\"\n" +
+                "            }\n" +
+                "        }\n"+
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+
+    @Test
+    public void buildElementNestedTwoTheSameLevelLinesAndNestedListWithTwoElements(){
+        String xmlElement  = "<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n"+
+                "       <el>1</el>\n" +
+                "       <el2>2</el2>\n" +
+                "    </list>\n" +
+                "</root>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\",\n" +
+                "        \"list\" : {\n" +
+                "            \"el\" : \"1\",\n" +
+                "            \"el2\" : \"2\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelLine(){
+        String xmlElement  =
+                "<host>localhost</host>\n" +
+                        "<port>8080</port>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\"\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelEqualLines(){
+        String xmlElement  =
+                "<array>\n" +
+                "    <element>localhost</element>\n" +
+                "    <element>8080</element>\n" +
+                "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : [\n" +
+                "        \"localhost\",\n" +
+                "        \"8080\"\n" +
+                "    ]\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelEqualLinesWithAttributes(){
+        String xmlElement  =
+                "<array>\n" +
+                        "    <element attr1 = \"1\">localhost</element>\n" +
+                        "    <element>8080</element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : [\n" +
+                "        {\n" +
+                "            \"@attr1\" : \"1\",\n" +
+                "            \"#element\" : \"localhost\"\n" +
+                "        },\n" +
+                "        \"8080\"\n" +
+                "    ]\n" +
+                "}", jsonValue);
+    }
+
+    @Test
+    public void buildElementTheSameLevelWithAttributesEqualLines(){
+        String xmlElement  =
+                "<array attr = \"1\">\n" +
+                        "    <element>localhost</element>\n" +
+                        "    <element>8080</element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#array\" : [\n" +
+                "            \"localhost\",\n" +
+                "            \"8080\"\n" +
+                "        ]\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+    //Array with list as value test
+    @Test
+    public void buildElementTheSameLevelWithAttributesEqualLinesWithNestedList(){
+        String xmlElement  =
+                "<array attr = \"1\">\n" +
+                        "    <element>localhost</element>\n" +
+                        "    <element>\n" +
+                        "       <el>1</el>\n" +
+                        "    </element>\n" +
+                        "</array>";
+        String jsonValue  =  xml2JsonConverter.convert(xmlElement);
+        assertEquals("{\n" +
+                "    \"array\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#array\" : [\n" +
+                "            \"localhost\",\n" +
+                "            \"element\" : {\n" +
+                "                \"el\" : \"1\"\n" +
+                "            }\n" +
+                "        ]\n" +
+                "    }\n" +
+                "}", jsonValue);
+    }
+
+
+    @Test
+    public void buildElementWithNestedLines(){
         String xmlElement  =  "<root>\n" +
                 "    <id>6753322</id>\n" +
                 "    <number region = \"Russia\">8-900-000-00-00</number>\n" +
@@ -139,20 +330,29 @@ public class JsonElementTest {
                 "}", jsonValue);
     }
 
-    @Test
+
     public void listWithTheSameElementName(){
         String input = "<element>\n" +
                 "   <deep deepattr = \"deepvalue\">\n" +
-                "       <element1>1</element1>\n" +
-                "       <element2>2</element2>\n" +
-                "       <element3>3</element3>\n" +
+                "       <element>1</element1>\n" +
+                "       <element>2</element2>\n" +
+                "       <element>3</element3>\n" +
                 "   </deep>\n" +
                 "</element>\n" ;
         String result = xml2JsonConverter.convert(input);
-        System.out.println(result);
+        assertEquals("{\n" +
+                "    \"deep\": {\n" +
+                "          \"@deepattr\": \"deepvalue\",\n" +
+                "          \"#deep\": [\n" +
+                "             \"1\",\n" +
+                "             \"2\",\n" +
+                "             \"3\"\n" +
+                "       ]\n" +
+                "    }\n" +
+                "}" ,result);
     }
 
-    //Not Nested Element
+
     public void buildElement_WithListAndNestedLines() {
         String xmlElement  =  "<root>\n" +
                 "    <transaction>\n" +
@@ -180,13 +380,13 @@ public class JsonElementTest {
                 "                <attr3>value4</attr3>\n" +
                 "                <elem>value5</elem>\n" +
                 "            </element>\n" +
-//                "            <element>\n" +
-//                "                <deep deepattr = \"deepvalue\">\n" +
-//                "                    <element>1</element>\n" +
-//                "                    <element>2</element>\n" +
-//                "                    <element>3</element>\n" +
-//                "                </deep>\n" +
-//                "            </element>\n" +
+                "            <element>\n" +
+                "                <deep deepattr = \"deepvalue\">\n" +
+                "                    <element>1</element>\n" +
+                "                    <element>2</element>\n" +
+                "                    <element>3</element>\n" +
+                "                </deep>\n" +
+                "            </element>\n" +
                 "        </array2>\n" +
                 "        <inner1>\n" +
                 "            <inner2>\n" +
@@ -238,7 +438,7 @@ public class JsonElementTest {
                 "    </transaction>\n" +
                 "    <meta>\n" +
                 "        <version>0.01</version>\n" +
-                "    </meta>\n" +
+               "    </meta>\n" +
                 "</root>";
         String jsonValue  =  xml2JsonConverter.convert(xmlElement);
         assertEquals("{\n" +

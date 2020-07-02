@@ -13,11 +13,15 @@ import java.util.Map;
 
     public abstract String print();
 
-    public Map<String, String> getAttributes() {
+     public Map<String, String> getAttributes() {
         return attributes;
     }
 
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    public boolean hasAttributes(){
+         return !attributes.isEmpty();
     }
 }

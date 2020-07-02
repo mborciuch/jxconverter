@@ -1,29 +1,25 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
-import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
-import com.mbor.converterservice.components.ComponentNode;
+import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
+import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
+import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
+import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonEmptyValueObject;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonNullValueObject;
+import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonValueObject;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+public class Xml2JsonConverter extends AbstractConverter<XmlInputExtractionResult> {
 
-public class Xml2JsonConverter extends AbstractConverter {
-
-    private static final String XML_ONE_LINE = ".+?>.*?([<>/]).*?</.+?";
-    private static final String ELEMENT_NAME_NO_ATTRIBUTES = "<([^<>]*?)/?[>]";
-    private static final String ELEMENT_NAME_WITH_ATTRIBUTES = "<(?:([^<>]*?)\\s)?";
-    private static final String ELEMENT_VALUE = ">([^<>/]*?)</";
-    private static final String ELEMENT_VALUE_NESTED = "([^/]><[^/])";
-    private static final String ELEMENT_ATTRIBUTES = "\\s(.*?)\\s=\\s\"(.*?)\"";
-    private static final String ELEMENT_ATTRIBUTES_ONE_LINE_XML = "\\s(.*?)\\s?=\\s?\"(.*?)\"";
-    private static final String ELEMENT_ATTRIBUTES_BEGINNING_OF_LIST = "";
-
-    private static final String ATTRIBUTE_SIGN = "@";
-    private static final String VALUE_SIGN = "#";
+    private static final String XML_ONE_LINE = "(<(.+)\\s?([^<>].+?)?>)(.+)?<\\/\\2>|(<([\\w\\d]+)\\s?((?=\\s)(.+?))?\\s?\\/>?)";
+    private static final String ELEMENT_ATTRIBUTES = "([\\w]+)\\s?=\\s?([\\w\\\"]+)";
 
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
@@ -46,188 +42,162 @@ public class Xml2JsonConverter extends AbstractConverter {
 
     @Override
     public String convert(String input) {
-        return prepareStructure(trimInput(input)).print();
+        AbstractNode resultTree = prepareStructure(trimInput(input));
+        return prepareComponentNode(resultTree).print();
     }
 
-    private ComponentNode prepareStructure(String input) {
-        ComponentNode componentNode;
+    private AbstractNode prepareStructure(String input) {
         String elementName;
-        boolean isInputOneLineXML = isInputOneLine(input);
-        if (isInputOneLineXML) {
-            Optional<Map<String, String>> possibleAttributes = getElementAttributes(input, ELEMENT_ATTRIBUTES_ONE_LINE_XML);
-            Optional<String> oneLineValue = getElementValue(input, ELEMENT_VALUE);
-            if (possibleAttributes.isPresent()) {
-                elementName = getElementName(input, ELEMENT_NAME_WITH_ATTRIBUTES);
-                NodeList nodeList = getNodeFactory().getNodeList(elementName);
-                for (Map.Entry<String, String> entry : possibleAttributes.get().entrySet()) {
-                    Node node = getNodeFactory().getNodeWithValue(entry.getKey(), entry.getValue());
-                    nodeList.addAbstractElement(node);
-                }
-                componentNode = getNodeFactory().getComponentNodeWithNodeList();
-                if (oneLineValue.isPresent()) {
-                    Node node = getNodeFactory().getNodeWithValue(prepareValueName(elementName), oneLineValue.get());
-                    nodeList.addAbstractElement(node);
-                    componentNode.setAbstractNode(nodeList);
-                } else {
-                    Node node = getNodeFactory().getNodeWithNoValue(prepareValueName(elementName));
-                    nodeList.addAbstractElement(node);
-                    componentNode.setAbstractNode(nodeList);
-                }
-
-            } else {
-                elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-                componentNode = getNodeFactory().getComponentNodeWithNode();
-                if (oneLineValue.isPresent()) {
-                    Node node = getNodeFactory().getNodeWithValue(elementName, oneLineValue.get());
-                    componentNode.setAbstractNode(node);
-                } else {
-                    Node node = getNodeFactory().getNodeWithNoValue(elementName);
-                    componentNode.setAbstractNode(node);
-                }
-            }
+        AbstractValueObject valueObject;
+        List<XmlInputExtractionResult> resultList = extractInput(input);
+        if (isInputExtractionResultTheSameLevelList(resultList)) {
+            elementName = "root";
+            NodeList nodeList = getNodeFactory().getNodeList(elementName);
+            resultList.forEach(element ->
+                    nodeList.addAbstractElement(prepareStructure(element.getWholeLine()))
+            );
+            return nodeList;
         } else {
-            elementName = getElementName(input, ELEMENT_NAME_NO_ATTRIBUTES);
-            boolean isInputWithList = isInputWithList(input, ELEMENT_NAME_WITH_ATTRIBUTES, elementName);
-            NodeList nodeList;
-            if (isInputWithList) {
-                nodeList = getNodeFactory().getEqualNodeList(elementName);
+            XmlInputExtractionResult result = resultList.get(0);
+            elementName = result.getName();
+            if (isInputExtractionResultLeaf(result)) {
+                Node node;
+                valueObject = prepareValueObject(result);
+                if (result.getAttributes().isPresent()) {
+                    Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                    node = getNodeFactory().getNodeWithAttributes(elementName, valueObject);
+                    node.setAttributes(attributes);
+                    return node;
+                } else {
+                    node = getNodeFactory().getNode(elementName, valueObject);
+                    return node;
+                }
             } else {
-                nodeList = getNodeFactory().getNodeList(elementName);
-            }
-            componentNode = getNodeFactory().getComponentNodeWithNodeList();
-            componentNode.setNodeName(elementName);
-            String extractedValue = extractElement(input, elementName);
-            List<String> allOneLines = new ArrayList<>();
-            findAllLines(extractedValue, allOneLines);
-            componentNode.setAbstractNode(nodeList);
-            for (String element : allOneLines) {
-                ComponentNode newJsonObject = prepareStructure(element);
-                nodeList.addAbstractElement(newJsonObject.getAbstractNode());
-            }
-        }
-        return componentNode;
-    }
-
-    private boolean isInputWithList(String input, String regexPattern, String parentName){
-        Pattern listPattern = Pattern.compile(parentName.concat(">".concat("<(.*?)[\\s>]")));
-        Matcher listMatcher = listPattern.matcher(input);
-        String result = null;
-        if (listMatcher.find()) {
-            result = listMatcher.group(1);
-        } else {
-            return false;
-        }
-        listMatcher.usePattern(Pattern.compile("<".concat(result.concat("[\\s>]"))));
-        int counter = 0;
-        while (listMatcher.find()){
-            counter++;
-        }
-        return counter > 0;
-    }
-
-    private String extractElement(String input, String parentName) {
-        Pattern extractionPattern = Pattern.compile(parentName.concat("(?:.*?)").concat(">(.*?)</".concat(parentName).concat(">")));
-        Matcher extractionMatcher = extractionPattern.matcher(input);
-        String extractedElement = "";
-        if (extractionMatcher.find()) {
-            extractedElement = extractionMatcher.group(1);
-        }
-        return extractedElement.trim();
-    }
-
-    private List<String> findAllLines(String input, List<String> allOneLines) {
-        Pattern emptyNodePattern = Pattern.compile("<(.*?/?)>");
-        Pattern oneLinePattern = Pattern.compile("((<.*?/?>)(.*?)(</.*?>))");
-        Matcher oneLineMatcher = emptyNodePattern.matcher(input);
-        while (oneLineMatcher.find()) {
-            String result = oneLineMatcher.group();
-            if (!result.contains("/")) {
-                int firstIndex = oneLineMatcher.start();
-                oneLineMatcher.region(firstIndex, input.length());
-                oneLineMatcher.usePattern(oneLinePattern);
-            } else {
-                if (getElementValue(oneLineMatcher.group(1), ELEMENT_VALUE_NESTED).isPresent()) {
-                    String elementName;
-                    if (getElementAttributes(oneLineMatcher.group(1), ELEMENT_ATTRIBUTES).isPresent()) {
-                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_WITH_ATTRIBUTES);
+                String extractedValue = result.getValue().get();
+                NodeList nodeList;
+                AbstractNode abstractNode = prepareStructure(extractedValue);
+                if (abstractNode instanceof NodeList) {
+                    nodeList = (NodeList) abstractNode;
+                    nodeList.setNodeName(elementName);
+                    if (isListWithEqualElement(nodeList.getList())) {
+                        if (result.getAttributes().isPresent()) {
+                            Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                            nodeList = getNodeFactory().getEqualNodeListWithAttributes(nodeList);
+                            nodeList.setAttributes(attributes);
+                        } else {
+                            nodeList = getNodeFactory().getEqualNodeList(nodeList);
+                        }
                     } else {
-                        elementName = getElementName(oneLineMatcher.group(2), ELEMENT_NAME_NO_ATTRIBUTES);
+                        if (result.getAttributes().isPresent()) {
+                            Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                            nodeList = getNodeFactory().getNodeListWithAttributes(nodeList);
+                            nodeList.setAttributes(attributes);
+                        }
                     }
-                    StringBuilder openingTag = new StringBuilder();
-                    openingTag.append("<").append(elementName).append(">");
-                    StringBuilder closingTag = new StringBuilder(openingTag);
-                    closingTag.insert(1,"/");
-                    String newInput = input.substring(oneLineMatcher.regionStart());
-                    int cutInputLength = input.length() - newInput.length();
-                    String extractedValue = openingTag.toString().concat(extractElement(newInput, elementName).concat(closingTag.toString()));
-                    allOneLines.add(extractedValue);
-                    int lastIndex = cutInputLength + extractedValue.length();
-                    oneLineMatcher.region(lastIndex, input.length());
                 } else {
-                    allOneLines.add(oneLineMatcher.group());
+                    if (result.getAttributes().isPresent()) {
+                        Map<String, String> attributes = new LinkedHashMap<>(getElementAttributes(result.getAttributes().get(), ELEMENT_ATTRIBUTES));
+                        nodeList = getNodeFactory().getNodeListWithAttributes(elementName);
+                        nodeList.setAttributes(attributes);
+                    } else {
+                        nodeList = getNodeFactory().getNodeList(elementName);
+                    }
+                    nodeList.addAbstractElement(abstractNode);
                 }
-                oneLineMatcher.usePattern(emptyNodePattern);
+                return nodeList;
             }
         }
-        return allOneLines;
     }
 
-    private String getElementName(String element, String regexPattern) {
-        Pattern elementNamePattern = Pattern.compile(regexPattern);
-        Matcher elementNameMatcher = elementNamePattern.matcher(element);
-        String elementName = "";
-        if (elementNameMatcher.find()) {
-            elementName = elementNameMatcher.group(1);
-            if (elementName.contains("/")) {
-                elementName = elementName.replace("/", "");
-            }
-        }
-        return elementName;
-    }
 
-    private Optional<String> getElementValue(String element, String regexPattern) {
-        Pattern elementValuePattern = Pattern.compile(regexPattern);
-        Matcher elementValueMatcher = elementValuePattern.matcher(element);
-        if (elementValueMatcher.find()) {
-            return Optional.ofNullable(elementValueMatcher.group(1));
-        }
-        return Optional.empty();
-    }
-
-    //@JavaDoc Special case: one line xml with empty value : elementName></elementName>
-    //Additional check in If statement. 3 derivatives from length of "></"
-    private boolean isInputOneLine(String input) {
+    protected List<XmlInputExtractionResult> extractInput(String input) {
         Pattern elementNamePattern = Pattern.compile(XML_ONE_LINE);
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
-        return !elementNameMatcher.find();
+        List<XmlInputExtractionResult> resultList = new LinkedList<>();
+        if (!elementNameMatcher.find()) {
+            throw new RuntimeException("Invalid input line: " + input);
+        }
+        elementNameMatcher.reset();
+        while (elementNameMatcher.find()) {
+            XmlInputExtractionResult xmlInputExtractionResult = new XmlInputExtractionResult();
+            xmlInputExtractionResult.setWholeLine(elementNameMatcher.group(0));
+            if (elementNameMatcher.group(5) == null) {
+                xmlInputExtractionResult.setName(elementNameMatcher.group(2));
+                if (elementNameMatcher.group(3) != null) {
+                    xmlInputExtractionResult.setAttributes(elementNameMatcher.group(3));
+                }
+                if (elementNameMatcher.group(4) != null) {
+                    xmlInputExtractionResult.setValue(elementNameMatcher.group(4));
+                } else {
+                    xmlInputExtractionResult.setValue("");
+                }
+            } else {
+                xmlInputExtractionResult.setName(elementNameMatcher.group(6));
+                if (elementNameMatcher.group(7) != null) {
+                    xmlInputExtractionResult.setAttributes(elementNameMatcher.group(7));
+                }
+            }
+            resultList.add(xmlInputExtractionResult);
+        }
+        return resultList;
     }
 
-    private Optional<Map<String, String>> getElementAttributes(String input, String regexp) {
+    private Map<String, String> getElementAttributes(String input, String regexp) {
         Map<String, String> attributes;
         Pattern attributesPattern = Pattern.compile(regexp);
         Matcher attributesMatcher = attributesPattern.matcher(input);
-        String[] values;
-        if (attributesMatcher.find()) {
-            attributesMatcher.reset();
-            attributes = new LinkedHashMap<>();
-            while (attributesMatcher.find()){
-                values = attributesMatcher.group().split("=");
-                attributes.put(prepareAttributeName(values[0].trim()), values[1].replace("\"", "").trim());
+        attributes = new LinkedHashMap<>();
+        try {
+            while (attributesMatcher.find()) {
+                attributes.put(attributesMatcher.group(1), attributesMatcher.group(2).replace("\"", ""));
             }
-            return Optional.of(attributes);
+        } catch (Exception e) {
+            throw new RuntimeException("Enexpected error during processing attributtes:" + e.getMessage());
         }
-        return Optional.empty();
+        return attributes;
     }
 
     private String trimInput(String input) {
         return input.replaceAll("\\n", "").replaceAll("\\s{2,}", "");
     }
 
-    private String prepareAttributeName(String key) {
-        return ATTRIBUTE_SIGN.concat(key);
+    @Override
+    protected boolean isInputExtractionResultLeaf(InputExtractionResult inputExtractionResult) {
+        if (!(inputExtractionResult instanceof XmlInputExtractionResult)) {
+            throw new RuntimeException("Result should be XmlInputExtractionResult");
+        }
+        XmlInputExtractionResult xmlInputExtractionResult = (XmlInputExtractionResult) inputExtractionResult;
+        String[] xmlSigns = {"<", ">", "/"};
+        if (xmlInputExtractionResult.getValue().isPresent()) {
+            String value = xmlInputExtractionResult.getValue().get();
+            if (value.isEmpty()) {
+                return true;
+            } else {
+                return Arrays.stream(xmlSigns).noneMatch(value::contains);
+            }
+        } else {
+            return true;
+        }
     }
 
-    private String prepareValueName(String key) {
-        return VALUE_SIGN.concat(key);
+    private boolean isListWithEqualElement(List<AbstractNode> resultList) {
+        List<String> nodeNames = resultList.stream().map(AbstractNode::getNodeName).collect(Collectors.toList());
+        return new HashSet<>(nodeNames).size() != resultList.size();
+    }
+
+    protected AbstractValueObject prepareValueObject(XmlInputExtractionResult result) {
+        AbstractValueObject valueObject;
+        if (result.getValue().isPresent()) {
+            String value = result.getValue().get();
+            if (!value.isEmpty()) {
+                valueObject = new JsonValueObject(value);
+            } else {
+                valueObject = new JsonEmptyValueObject();
+            }
+        } else {
+            valueObject = new JsonNullValueObject();
+        }
+        return valueObject;
     }
 }
+
