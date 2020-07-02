@@ -5,7 +5,7 @@ import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class Xml2jsonConverterFactory {
 
     public Xml2JsonConverter xml2jsonConverter(){

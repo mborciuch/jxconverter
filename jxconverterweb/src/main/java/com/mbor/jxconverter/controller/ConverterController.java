@@ -40,11 +40,17 @@ public class ConverterController {
     )
     public ResponseEntity<OutputValue> convertJsonToXml(@RequestBody InputValue inputValue){
         String result = json2xmlConverter.convert(inputValue.getValue());
+        result = addQuotationMarks(result);
         OutputValue outputValue = OutputValue.outputValueBuilder()
                 .setValue(result)
                 .build();
         return new ResponseEntity<>(outputValue, HttpStatus.OK);
     }
 
+    private String addQuotationMarks(String result) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\"").append(result).append("\"");
+        return stringBuilder.toString();
+    }
 }
 

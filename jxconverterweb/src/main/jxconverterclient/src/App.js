@@ -26,7 +26,7 @@ class App extends Component {
         this.handleXmlTextAreaChange = this.handleXmlTextAreaChange.bind(this);
         this.handleJsonTextAreaChange = this.handleJsonTextAreaChange.bind(this);
         this.handleConvertToJson = this.handleConvertToJson.bind(this);
-
+        this.handleConvertToXml = this.handleConvertToXml.bind(this);
     }
 
     handleXmlTextAreaChange(e) {
@@ -47,7 +47,12 @@ class App extends Component {
         document.getElementById("json-input-field").value = value;
     }
 
+    updateXmlTextArea(value) {
+        document.getElementById("xml-input-field").value = value;
+    }
+
     handleConvertToJson() {
+        document.getElementById(jsonConverter.textareaId).value = "";
         fetch(`${url}?conversionType=toJson`, {
             method: "POST",
             headers: {
@@ -58,7 +63,26 @@ class App extends Component {
             .then(response => response.json())
             .then(jsonValue => {
                     this.setState({jsonValue: JSON.stringify(jsonValue.value)});
-                    this.updateJsonTextArea(JSON.stringify(jsonValue.value));
+                    this.updateJsonTextArea(this.state.jsonValue);
+                }
+            )
+    }
+
+    handleConvertToXml() {
+        document.getElementById(xmlConverter.textareaId).value = "";
+        fetch(`${url}?conversionType=toXml`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({value: this.state.jsonValue})
+        })
+            .then(response => response.json())
+            .then(xmlValue => {
+                    let value = JSON.stringify(xmlValue.value);
+                    value = value.substring(1, value.length - 1);
+                    this.setState({xmlValue: value});
+                    this.updateXmlTextArea(this.state.xmlValue);
                 }
             )
     }
@@ -78,11 +102,10 @@ class App extends Component {
                     <div className="container-element buttons">
                         <p>
                             <button className="button" onClick={this.handleConvertToJson}> To Json</button>
-                            <button className="button"> To Xml</button>
+                            <button className="button" onClick={this.handleConvertToXml}> To Xml</button>
                         </p>
                     </div>
                     <ConverterComponent data={jsonConverter} onChange={this.handleJsonTextAreaChange}/>
-
                 </div>
             </div>
         );
