@@ -1,7 +1,9 @@
 package com.mbor.converterservice.factories.printers;
 
 import com.mbor.converterservice.components.Printer;
-import com.mbor.converterservice.factories.printers.xml.*;
+import com.mbor.converterservice.factories.printers.xml.XMLComponentNodeWithNodeListPrinter;
+import com.mbor.converterservice.factories.printers.xml.XMLComponentNodeWithNodePrinter;
+import com.mbor.converterservice.factories.printers.xml.XMLEqualNodeListPrinter;
 import com.mbor.converterservice.factories.printers.xml.node.XMLNodeWithNoValuePrinter;
 import com.mbor.converterservice.factories.printers.xml.node.XMLNodeWithValuePrinter;
 import com.mbor.converterservice.factories.printers.xml.nodelist.XMLNodeListPrinter;

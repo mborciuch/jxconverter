@@ -1,12 +1,8 @@
 package com.mbor.converterservice.factories.printers.xml.node;
 
-import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
-import com.mbor.converterservice.components.Printer;
 
-import java.util.Map;
-
-import static com.mbor.converterservice.utils.XmlUtils.*;
+import static com.mbor.converterservice.utils.XmlUtils.XML_CLOSE_EMPTY_ELEMENT_TAG;
 
 public class XMLNodeWithNoValuePrinter extends XmlNodePrinter {
 

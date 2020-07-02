@@ -1,7 +1,6 @@
 package com.mbor.converterservice.factories.printers.json.nodelist;
 
 import com.mbor.converterservice.components.AbstractNode;
-
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.Printer;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
@@ -13,7 +12,6 @@ import java.util.Map;
 import static com.mbor.converterservice.utils.CommonUtils.EMPTY_SPACE;
 import static com.mbor.converterservice.utils.CommonUtils.NEW_LINE;
 import static com.mbor.converterservice.utils.JsonUtils.*;
-import static com.mbor.converterservice.utils.JsonUtils.JSON_CLOSE_SIGN;
 
 public class JsonNodeListWithAttributesPrinter implements Printer {
     @Override

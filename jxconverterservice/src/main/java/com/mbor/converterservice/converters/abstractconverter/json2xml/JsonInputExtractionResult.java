@@ -2,11 +2,12 @@ package com.mbor.converterservice.converters.abstractconverter.json2xml;
 
 import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 public class JsonInputExtractionResult implements InputExtractionResult {
 
-    private Object wholeLine;
+    private LinkedHashMap<String, Object> wholeLine;
     private String name;
     private String attributes;
     private Object value;
@@ -16,8 +17,12 @@ public class JsonInputExtractionResult implements InputExtractionResult {
         return wholeLine;
     }
 
+    @Override
     public void setWholeLine(Object wholeLine) {
-        this.wholeLine = wholeLine;
+        if(!(wholeLine instanceof  LinkedHashMap)){
+            throw new RuntimeException("wholeLine should be instance of LinkedHashMap");
+        }
+        this.wholeLine = (LinkedHashMap<String, Object>) wholeLine;
     }
 
     @Override

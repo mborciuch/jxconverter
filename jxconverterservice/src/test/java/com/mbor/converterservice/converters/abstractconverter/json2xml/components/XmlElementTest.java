@@ -14,7 +14,7 @@ public class XmlElementTest {
     private static Json2XmlConverter json2XmlConverter;
 
     @BeforeAll
-    public static void prepareConverter(){
+    public static void prepareConverter() {
         XmlPrinterFactory xmlPrinterFactory = new XmlPrinterFactory();
         NodeFactory nodeFactory = new NodeFactory(xmlPrinterFactory);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -22,35 +22,51 @@ public class XmlElementTest {
     }
 
     @Test
-    public void buildElement_WithValue() {
+    public void buildElementWithValue() {
         String jsonElement = "{\"jdk\" : \"1.8.9\"}";
         String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<jdk>1.8.9</jdk>", xmlValue);
     }
-    @Test
-    public void buildElement_Empty(){
-        String jsonElement = "{\"success\" : null}";
-        String xmlValue  = json2XmlConverter.convert(jsonElement);
-        assertEquals("<success/>",xmlValue);
 
+    @Test
+    public void buildElementEmpty() {
+        String jsonElement = "{\"success\" : null}";
+        String xmlValue = json2XmlConverter.convert(jsonElement);
+        assertEquals("<success/>", xmlValue);
     }
 
     @Test
-    public void buildElement_WithTwoValues() {
+    public void buildElementNestedTwoEqualLine() {
+        String jsonElement = "{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\"\n" +
+                "    }\n" +
+                "}";
+        String jsonValue = json2XmlConverter.convert(jsonElement);
+        assertEquals("<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "</root>", jsonValue);
+    }
+
+    @Test
+    public void buildElementWithTwoValues() {
         String jsonElement =
-                "{" +
-                " \"jdk\" : \"1.8.9\",\n" +
-                " \"jre\" :  \"11.0.1\"}";
+                "{\n" +
+                        "   \"jdk\" : \"1.8.9\",\n" +
+                        "   \"jre\" :  \"11.0.1\" \n" +
+                        "}";
         String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals(
                 "<root>\n" +
-                "    <jdk>1.8.9</jdk>\n" +
-                "    <jre>11.0.1</jre>\n" +
-                "</root>", xmlValue);
+                        "    <jdk>1.8.9</jdk>\n" +
+                        "    <jre>11.0.1</jre>\n" +
+                        "</root>", xmlValue);
     }
 
     @Test
-    public void buildElement_WithValueWithAttribute(){
+    public void buildElementWithValueWithAttribute() {
         String jsonElement = "{\n" +
                 "    \"employee\" : {\n" +
                 "        \"@department\" : \"manager\",\n" +
@@ -62,7 +78,7 @@ public class XmlElementTest {
     }
 
     @Test
-    public void buildElement_EmptyWithAttributes(){
+    public void buildElementEmptyWithAttributes() {
         String jsonElement = "{\n" +
                 "    \"person\" : {\n" +
                 "        \"@rate\" : 1,\n" +
@@ -75,8 +91,54 @@ public class XmlElementTest {
     }
 
     @Test
-    public void buildElement_WithNestedLines(){
-        String jsonElement  = "{\n" +
+    public void buildElementListAndNestedList() {
+        String jsonElement = "{\n" +
+                "    \"root\" : {\n" +
+                "        \"host\" : \"localhost\",\n" +
+                "        \"port\" : \"8080\",\n" +
+                "        \"list\" : {\n" +
+                "            \"el\" : \"1\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        String jsonValue = json2XmlConverter.convert(jsonElement);
+        assertEquals("<root>\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n" +
+                "        <el>1</el>\n" +
+                "    </list>\n" +
+                "</root>", jsonValue);
+    }
+
+    @Test
+    public void buildElementListWithAttributesAndNestedList() {
+        String jsonElement = "{\n" +
+                "    \"root\" : {\n" +
+                "        \"@attr\" : \"1\",\n" +
+                "        \"#root\" : {\n" +
+                "            \"host\" : \"localhost\",\n" +
+                "            \"port\" : \"8080\",\n" +
+                "            \"list\" : {\n" +
+                "                  \"el\" : \"1\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        String jsonValue = json2XmlConverter.convert(jsonElement);
+        assertEquals("<root attr=\"1\">\n" +
+                "    <host>localhost</host>\n" +
+                "    <port>8080</port>\n" +
+                "    <list>\n" +
+                "        <el>1</el>\n" +
+                "    </list>\n" +
+                "</root>", jsonValue);
+    }
+
+    @Test
+    public void buildElementWithNestedLines() {
+        String jsonElement = "{\n" +
                 "    \"root\" : {\n" +
                 "        \"id\" : \"6753322\",\n" +
                 "        \"number\" : {\n" +
@@ -115,7 +177,7 @@ public class XmlElementTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        String xmlValue  =  json2XmlConverter.convert(jsonElement);
+        String xmlValue = json2XmlConverter.convert(jsonElement);
         assertEquals("<root>\n" +
                 "    <id>6753322</id>\n" +
                 "    <number region=\"Russia\">8-900-000-00-00</number>\n" +
@@ -133,19 +195,5 @@ public class XmlElementTest {
                 "        <date day=\"12\" month=\"12\" year=\"2018\"/>\n" +
                 "    </email>\n" +
                 "</root>", xmlValue);
-
     }
-
-    @Test
-    public void buildElement_Pizza(){
-        String jsonElement = "{\n" +
-                "    \"pizza\" : {\n" +
-                "        \"@size\" : 20,\n" +
-                "        \"#pizza\" : 123\n" +
-                "    }\n" +
-                "}";
-        String xmlValue = json2XmlConverter.convert(jsonElement);
-        assertEquals("<pizza size=\"20\">123</pizza>", xmlValue);
-    }
-
 }

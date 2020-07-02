@@ -2,18 +2,15 @@ package com.mbor.converterservice.factories.printers.json.node;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Node;
-import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.Printer;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 import com.mbor.converterservice.utils.CommonUtils;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import static com.mbor.converterservice.utils.CommonUtils.EMPTY_SPACE;
 import static com.mbor.converterservice.utils.CommonUtils.NEW_LINE;
 import static com.mbor.converterservice.utils.JsonUtils.*;
-import static com.mbor.converterservice.utils.JsonUtils.JSON_CLOSE_SIGN;
 
 public class JsonNodeWithAttributesInEqualListPrinter implements Printer {
     @Override

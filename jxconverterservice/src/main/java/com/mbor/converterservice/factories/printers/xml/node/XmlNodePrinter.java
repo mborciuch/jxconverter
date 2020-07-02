@@ -6,7 +6,6 @@ import com.mbor.converterservice.components.Printer;
 
 import java.util.Map;
 
-import static com.mbor.converterservice.utils.XmlUtils.XML_CLOSE_TAG;
 import static com.mbor.converterservice.utils.XmlUtils.XML_OPEN_TAG;
 
 public abstract class XmlNodePrinter implements Printer {
