@@ -3,7 +3,7 @@ import './App.css';
 import './ConverterComponent';
 import ConverterComponent from "./ConverterComponent";
 
-const url = "/api/converters";
+const url = "/converters";
 const xmlConverter = {
     id: "xml-to-json-converter",
     title: "xml",
@@ -60,14 +60,19 @@ class App extends Component {
             },
             body: JSON.stringify({value: this.state.xmlValue})
         })
-            .then(response => response.json())
+            .then(response => {
+                return response.json()
+            })
             .then(jsonValue => {
-                    this.setState({jsonValue: JSON.stringify(jsonValue.value)});
+                    if (jsonValue.value !== undefined) {
+                        this.setState({jsonValue: JSON.stringify(jsonValue.value)});
+                    } else {
+                        this.setState({jsonValue: JSON.stringify(jsonValue.message)});
+                    }
                     this.updateJsonTextArea(this.state.jsonValue);
                 }
-            )
+            );
     }
-
     handleConvertToXml() {
         document.getElementById(xmlConverter.textareaId).value = "";
         fetch(`${url}?conversionType=toXml`, {
@@ -79,13 +84,18 @@ class App extends Component {
         })
             .then(response => response.json())
             .then(xmlValue => {
-                    let value = JSON.stringify(xmlValue.value);
-                    value = value.substring(1, value.length - 1);
-                    this.setState({xmlValue: value});
+                    if (xmlValue.value !== undefined) {
+                        let value = JSON.stringify(xmlValue.value);
+                        value = value.substring(1, value.length - 1);
+                        this.setState({xmlValue: value});
+                    } else {
+                        this.setState({xmlValue: JSON.stringify(xmlValue.message)});
+                    }
                     this.updateXmlTextArea(this.state.xmlValue);
                 }
             )
     }
+
 
 
     render() {
