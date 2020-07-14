@@ -9,6 +9,7 @@ import com.mbor.converterservice.converters.abstractconverter.InputExtractionRes
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonEmptyValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonNullValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonValueObject;
+import com.mbor.converterservice.exception.ProcessingException;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
 import java.util.*;
@@ -115,7 +116,7 @@ public class Xml2JsonConverter extends AbstractConverter<XmlInputExtractionResul
         Matcher elementNameMatcher = elementNamePattern.matcher(input);
         List<XmlInputExtractionResult> resultList = new LinkedList<>();
         if (!elementNameMatcher.find()) {
-            throw new RuntimeException("Invalid input line: " + input);
+            throw new ProcessingException("Invalid input line: " + input);
         }
         elementNameMatcher.reset();
         while (elementNameMatcher.find()) {
