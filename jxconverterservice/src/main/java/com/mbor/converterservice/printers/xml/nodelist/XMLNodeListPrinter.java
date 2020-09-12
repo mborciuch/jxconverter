@@ -1,4 +1,4 @@
-package com.mbor.converterservice.factories.printers.xml.nodelist;
+package com.mbor.converterservice.printers.xml.nodelist;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.NodeList;

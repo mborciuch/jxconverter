@@ -1,9 +1,9 @@
-package com.mbor.converterservice.factories.printers.xml;
+package com.mbor.converterservice.printers.xml;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.Printer;
 
-public class XMLComponentNodeWithNodeListPrinter implements Printer {
+public class XMLComponentNodeWithNodePrinter implements Printer {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {

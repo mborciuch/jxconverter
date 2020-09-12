@@ -1,4 +1,4 @@
-package com.mbor.converterservice.factories.printers.xml.node;
+package com.mbor.converterservice.printers.xml.node;
 
 import com.mbor.converterservice.components.Node;
 

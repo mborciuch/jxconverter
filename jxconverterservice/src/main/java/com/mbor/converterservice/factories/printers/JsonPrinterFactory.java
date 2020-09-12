@@ -1,16 +1,16 @@
 package com.mbor.converterservice.factories.printers;
 
 import com.mbor.converterservice.components.Printer;
-import com.mbor.converterservice.factories.printers.json.JsonComponentNodeWithNodeListPrinter;
-import com.mbor.converterservice.factories.printers.json.JsonComponentNodeWithNodePrinter;
-import com.mbor.converterservice.factories.printers.json.equallist.JsonEqualNodeListPrinter;
-import com.mbor.converterservice.factories.printers.json.equallist.JsonEqualNodeListWithAttributesPrinter;
-import com.mbor.converterservice.factories.printers.json.node.JsonNodeInEqualListPrinter;
-import com.mbor.converterservice.factories.printers.json.node.JsonNodePrinter;
-import com.mbor.converterservice.factories.printers.json.node.JsonNodeWithAttributesInEqualListPrinter;
-import com.mbor.converterservice.factories.printers.json.node.JsonNodeWithAttributesPrinter;
-import com.mbor.converterservice.factories.printers.json.nodelist.JsonNodeListPrinter;
-import com.mbor.converterservice.factories.printers.json.nodelist.JsonNodeListWithAttributesPrinter;
+import com.mbor.converterservice.printers.json.JsonComponentNodeWithNodeListPrinter;
+import com.mbor.converterservice.printers.json.JsonComponentNodeWithNodePrinter;
+import com.mbor.converterservice.printers.json.equallist.JsonEqualNodeListPrinter;
+import com.mbor.converterservice.printers.json.equallist.JsonEqualNodeListWithAttributesPrinter;
+import com.mbor.converterservice.printers.json.node.JsonNodeInEqualListPrinter;
+import com.mbor.converterservice.printers.json.node.JsonNodePrinter;
+import com.mbor.converterservice.printers.json.node.JsonNodeWithAttributesInEqualListPrinter;
+import com.mbor.converterservice.printers.json.node.JsonNodeWithAttributesPrinter;
+import com.mbor.converterservice.printers.json.nodelist.JsonNodeListPrinter;
+import com.mbor.converterservice.printers.json.nodelist.JsonNodeListWithAttributesPrinter;
 
 public class JsonPrinterFactory extends AbstractPrinterFactory {
 

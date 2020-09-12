@@ -1,4 +1,4 @@
-package com.mbor.converterservice.factories.printers.json.equallist;
+package com.mbor.converterservice.printers.json.equallist;
 
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.NodeList;
