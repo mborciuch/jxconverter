@@ -1,18 +1,25 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json;
 
 import com.mbor.converterservice.components.AbstractNode;
+import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
+import com.mbor.converterservice.converters.abstractconverter.PrintJsonTreeTask;
+import com.mbor.converterservice.converters.abstractconverter.PrintXmlTreeTask;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonEmptyValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonNullValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonValueObject;
 import com.mbor.converterservice.exception.ProcessingException;
+import com.mbor.converterservice.exception.ServerException;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,8 +32,8 @@ public class Xml2JsonConverter extends AbstractConverter<XmlInputExtractionResul
     private static int currentIndentation = 0;
     private static int indentationOffset = 4;
 
-    public Xml2JsonConverter(NodeFactory nodeFactory) {
-        super(nodeFactory);
+    public Xml2JsonConverter(NodeFactory nodeFactory, ExecutorService executorService) {
+        super(nodeFactory, executorService);
     }
 
     public static int getCurrentIndentation() {
@@ -44,7 +51,21 @@ public class Xml2JsonConverter extends AbstractConverter<XmlInputExtractionResul
     @Override
     public String convert(String input) {
         AbstractNode resultTree = prepareStructure(trimInput(input));
-        return prepareComponentNode(resultTree).print();
+        ComponentNode componentNode = prepareComponentNode(resultTree);
+        return print(componentNode);
+    }
+
+    private String print(ComponentNode componentNode) {
+        PrintJsonTreeTask printJsonTreeTask = new PrintJsonTreeTask(componentNode);
+        Future<String> futureResult;
+        String result;
+        try {
+            futureResult = getExecutorService().submit(printJsonTreeTask);
+            result = futureResult.get(200, TimeUnit.MILLISECONDS);
+        } catch (Exception e){
+            throw new ServerException("Unexpected server error");
+        }
+        return result;
     }
 
     private AbstractNode prepareStructure(String input) {

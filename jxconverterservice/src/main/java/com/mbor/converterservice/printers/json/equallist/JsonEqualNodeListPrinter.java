@@ -29,6 +29,7 @@ public class JsonEqualNodeListPrinter implements Printer {
             }
             stringBuilder.append(CommonUtils.NEW_LINE);
         }
+        Thread.l
         Xml2JsonConverter.decrementCurrentIndentation();
         stringBuilder.append(CommonUtils.EMPTY_SPACE.repeat(Xml2JsonConverter.getCurrentIndentation()));
         stringBuilder.append(JSON_LIST_CLOSE_SIGN);

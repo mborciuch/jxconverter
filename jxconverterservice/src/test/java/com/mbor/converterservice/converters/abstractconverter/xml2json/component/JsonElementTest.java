@@ -1,6 +1,7 @@
 package com.mbor.converterservice.converters.abstractconverter.xml2json.component;
 
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
+import com.mbor.converterservice.factories.converters.Xml2jsonConverterFactory;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,9 +15,8 @@ public class JsonElementTest {
 
     @BeforeAll
     public static void prepareConverter(){
-        JsonPrinterFactory jsonNodePrinterFactory = new JsonPrinterFactory();
-        NodeFactory nodeFactory = new NodeFactory(jsonNodePrinterFactory);
-        xml2JsonConverter =  new Xml2JsonConverter(nodeFactory);
+        Xml2jsonConverterFactory xml2jsonConverterFactory = new Xml2jsonConverterFactory();
+        xml2JsonConverter =  xml2jsonConverterFactory.xml2jsonConverter();
     }
 
     @Test

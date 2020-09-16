@@ -3,25 +3,31 @@ package com.mbor.converterservice.converters.abstractconverter.json2xml;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mbor.converterservice.components.AbstractNode;
+import com.mbor.converterservice.components.ComponentNode;
 import com.mbor.converterservice.components.Node;
 import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
+import com.mbor.converterservice.converters.abstractconverter.PrintXmlTreeTask;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlEmptyValueObject;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlNullValueObject;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlValueObject;
 import com.mbor.converterservice.exception.ProcessingException;
+import com.mbor.converterservice.exception.ServerException;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class Json2XmlConverter extends AbstractConverter<JsonInputExtractionResult> {
 
     private final ObjectMapper objectMapper;
 
-    public Json2XmlConverter(NodeFactory nodeFactory, ObjectMapper objectMapper) {
-        super(nodeFactory);
+    public Json2XmlConverter(NodeFactory nodeFactory, ObjectMapper objectMapper, ExecutorService executorService) {
+        super(nodeFactory, executorService);
         this.objectMapper = objectMapper;
     }
 
@@ -29,7 +35,21 @@ public class Json2XmlConverter extends AbstractConverter<JsonInputExtractionResu
     public String convert(String input) {
         LinkedHashMap<String, Object> rootMap = prepareRootMap(input);
         AbstractNode resultTree = prepareStructure(rootMap);
-        return prepareComponentNode(resultTree).print();
+        ComponentNode componentNode = prepareComponentNode(resultTree);
+        return print(componentNode);
+    }
+
+    private String print(ComponentNode componentNode) {
+        PrintXmlTreeTask printXmlTreeTask = new PrintXmlTreeTask(componentNode);
+        Future<String> futureResult;
+        String result;
+        try {
+            futureResult = getExecutorService().submit(printXmlTreeTask);
+            result = futureResult.get(200, TimeUnit.MILLISECONDS);
+        } catch (Exception e){
+            throw new ServerException("Unexpected server error");
+        }
+        return result;
     }
 
     private AbstractNode prepareStructure(LinkedHashMap<String, Object> rootMap) {

@@ -2,6 +2,7 @@ package com.mbor.converterservice.converters.abstractconverter.json2xml.componen
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.Json2XmlConverter;
+import com.mbor.converterservice.factories.converters.Json2xmlConverterFactory;
 import com.mbor.converterservice.factories.nodes.NodeFactory;
 import com.mbor.converterservice.factories.printers.XmlPrinterFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,10 +16,8 @@ public class XmlElementTest {
 
     @BeforeAll
     public static void prepareConverter() {
-        XmlPrinterFactory xmlPrinterFactory = new XmlPrinterFactory();
-        NodeFactory nodeFactory = new NodeFactory(xmlPrinterFactory);
-        ObjectMapper objectMapper = new ObjectMapper();
-        json2XmlConverter = new Json2XmlConverter(nodeFactory, objectMapper);
+        Json2xmlConverterFactory json2xmlConverterFactory = new Json2xmlConverterFactory();
+        json2XmlConverter = json2xmlConverterFactory.json2xmlConverter();
     }
 
     @Test
