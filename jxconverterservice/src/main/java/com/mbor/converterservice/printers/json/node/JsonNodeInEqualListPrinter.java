@@ -1,10 +1,10 @@
 package com.mbor.converterservice.printers.json.node;
 
 import com.mbor.converterservice.components.AbstractNode;
+import com.mbor.converterservice.components.IndentationPrinter;
 import com.mbor.converterservice.components.Node;
-import com.mbor.converterservice.components.Printer;
 
-public class JsonNodeInEqualListPrinter implements Printer {
+public class JsonNodeInEqualListPrinter extends IndentationPrinter {
     @Override
     public String prepareElement(AbstractNode abstractNode) {
         if(!(abstractNode  instanceof Node)){

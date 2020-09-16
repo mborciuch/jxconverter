@@ -1,14 +1,14 @@
 package com.mbor.converterservice.printers.json.node;
 
 import com.mbor.converterservice.components.AbstractNode;
+import com.mbor.converterservice.components.IndentationPrinter;
 import com.mbor.converterservice.components.Node;
-import com.mbor.converterservice.components.Printer;
 import com.mbor.converterservice.utils.CommonUtils;
 
 import static com.mbor.converterservice.utils.JsonUtils.JSON_COLON;
 import static com.mbor.converterservice.utils.JsonUtils.JSON_QUOTE;
 
-public class JsonNodePrinter implements Printer {
+public class JsonNodePrinter extends IndentationPrinter {
 
     @Override
     public String prepareElement(AbstractNode abstractNode) {

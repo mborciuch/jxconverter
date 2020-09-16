@@ -1,14 +1,16 @@
 package com.mbor.converterservice.components;
 
- public class ComponentNode extends AbstractNode {
+import com.mbor.converterservice.converters.abstractconverter.Indentation;
+
+public class ComponentNode extends AbstractNode {
 
     private String elementName;
 
     private AbstractNode abstractNode;
 
-    private Printer printer;
+    private IIndentationPrinter printer;
 
-    public ComponentNode(Printer printer) {
+    public ComponentNode(IIndentationPrinter printer) {
         this.printer = printer;
     }
 
@@ -22,16 +24,21 @@ package com.mbor.converterservice.components;
         this.elementName = nodeName;
     }
 
-    public void setAbstractNode(AbstractNode abstractNode) {
-        this.abstractNode = abstractNode;
-    }
-
     public AbstractNode getAbstractNode() {
         return abstractNode;
+    }
+
+    public void setAbstractNode(AbstractNode abstractNode) {
+        this.abstractNode = abstractNode;
     }
 
     @Override
     public String print() {
         return printer.prepareElement(abstractNode);
+    }
+
+    @Override
+    public void setPrinterThreadLocal(ThreadLocal<Indentation> threadLocal) {
+        printer.setThreadLocal(threadLocal);
     }
 }

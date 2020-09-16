@@ -1,5 +1,7 @@
 package com.mbor.converterservice.components;
 
+import com.mbor.converterservice.converters.abstractconverter.Indentation;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,10 +12,9 @@ import java.util.List;
 
     private List<AbstractNode> list;
 
-    private Printer printer;
+    private IIndentationPrinter printer;
 
-
-    public NodeList(String elementName, Printer printer) {
+    public NodeList(String elementName, IIndentationPrinter printer) {
         this.elementName = elementName;
         this.printer = printer;
         this.list = new ArrayList<>();
@@ -50,6 +51,11 @@ import java.util.List;
     public String print() {
         return printer.prepareElement(this);
     }
+
+     @Override
+     public void setPrinterThreadLocal(ThreadLocal<Indentation> threadLocal) {
+         printer.setThreadLocal(threadLocal);
+     }
 }
 
 

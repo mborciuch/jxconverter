@@ -10,4 +10,8 @@ public class Indentation {
     public void decreaseIndentation(){
         currentIndentation = currentIndentation - offset;
     }
+
+    public int getCurrentIndentation(){
+        return currentIndentation;
+    }
 }

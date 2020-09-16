@@ -4,18 +4,18 @@ import com.mbor.converterservice.components.ComponentNode;
 
 import java.util.concurrent.Callable;
 
-public class PrintJsonTreeTask implements Callable<String> {
-
+public class PrintTreeTask implements Callable<String> {
     private final ComponentNode componentNode;
-    private ThreadLocal<Indentation> threadLocal = new ThreadLocal<>();
+    private final ThreadLocal<Indentation> threadLocal = new ThreadLocal<>();
 
-    public PrintJsonTreeTask(ComponentNode componentNode) {
+    public PrintTreeTask(ComponentNode componentNode) {
         this.componentNode = componentNode;
     }
 
     @Override
     public String call() throws Exception {
         threadLocal.set(new Indentation());
+        componentNode.setPrinterThreadLocal(threadLocal);
         return componentNode.print();
     }
 }

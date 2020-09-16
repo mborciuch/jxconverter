@@ -2,8 +2,6 @@ package com.mbor.converterservice.converters.abstractconverter.xml2json.componen
 
 import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 import com.mbor.converterservice.factories.converters.Xml2jsonConverterFactory;
-import com.mbor.converterservice.factories.nodes.NodeFactory;
-import com.mbor.converterservice.factories.printers.JsonPrinterFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

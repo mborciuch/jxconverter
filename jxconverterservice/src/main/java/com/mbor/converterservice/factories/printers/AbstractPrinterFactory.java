@@ -1,30 +1,30 @@
 package com.mbor.converterservice.factories.printers;
 
-import com.mbor.converterservice.components.Printer;
+import com.mbor.converterservice.components.IIndentationPrinter;
 
 public abstract class AbstractPrinterFactory {
 
-    public abstract Printer getComponentNodeWithNodePrinter();
+    public abstract IIndentationPrinter getComponentNodeWithNodePrinter();
 
-    public abstract Printer getComponentNodeWithNodeListPrinter();
+    public abstract IIndentationPrinter getComponentNodeWithNodeListPrinter();
 
-    public abstract Printer getNodeWithNoValuePrinter();
+    public abstract IIndentationPrinter getNodeWithNoValuePrinter();
 
-    public abstract Printer getNodePrinter();
+    public abstract IIndentationPrinter getNodePrinter();
 
-    public abstract  Printer getNodeWithValuePrinter();
+    public abstract IIndentationPrinter getNodeWithValuePrinter();
 
-    public abstract Printer getNodeListPrinter();
+    public abstract IIndentationPrinter getNodeListPrinter();
 
-    public abstract Printer getNodeEqualListPrinter();
+    public abstract IIndentationPrinter getNodeEqualListPrinter();
 
-    public abstract Printer getNodeWithAttributesPrinter();
+    public abstract IIndentationPrinter getNodeWithAttributesPrinter();
 
-    public abstract Printer getNodeInEqualListPrinter();
+    public abstract IIndentationPrinter getNodeInEqualListPrinter();
 
-    public abstract Printer getNodeWithAttributesInEqualListPrinter();
+    public abstract IIndentationPrinter getNodeWithAttributesInEqualListPrinter();
 
-    public abstract Printer getNodeListWithAttributesPrinter();
+    public abstract IIndentationPrinter getNodeListWithAttributesPrinter();
 
-    public abstract Printer getEqualNodeListWithAttributesPrinter();
+    public abstract IIndentationPrinter getEqualNodeListWithAttributesPrinter();
 }

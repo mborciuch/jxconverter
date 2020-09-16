@@ -1,5 +1,7 @@
 package com.mbor.converterservice.components;
 
+import com.mbor.converterservice.converters.abstractconverter.Indentation;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 
     public abstract String print();
 
-     public Map<String, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
@@ -24,4 +26,6 @@ import java.util.Map;
     public boolean hasAttributes(){
          return !attributes.isEmpty();
     }
+
+    public abstract void setPrinterThreadLocal(ThreadLocal<Indentation> threadLocal);
 }

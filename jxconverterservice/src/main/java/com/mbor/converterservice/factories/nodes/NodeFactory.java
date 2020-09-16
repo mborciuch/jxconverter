@@ -26,7 +26,7 @@ public class NodeFactory {
     }
 
     public Node getNode(String elementName, AbstractValueObject abstractValueObject) {
-        Printer printer;
+        IIndentationPrinter printer;
         if(abstractValueObject instanceof XmlNullValueObject){
             printer = abstractPrinterFactory.getNodeWithNoValuePrinter();
         } else {

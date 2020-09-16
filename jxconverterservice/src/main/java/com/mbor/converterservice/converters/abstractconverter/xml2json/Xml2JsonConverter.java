@@ -7,8 +7,7 @@ import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
-import com.mbor.converterservice.converters.abstractconverter.PrintJsonTreeTask;
-import com.mbor.converterservice.converters.abstractconverter.PrintXmlTreeTask;
+import com.mbor.converterservice.converters.abstractconverter.PrintTreeTask;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonEmptyValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonNullValueObject;
 import com.mbor.converterservice.converters.abstractconverter.xml2json.valueobjects.JsonValueObject;
@@ -56,12 +55,12 @@ public class Xml2JsonConverter extends AbstractConverter<XmlInputExtractionResul
     }
 
     private String print(ComponentNode componentNode) {
-        PrintJsonTreeTask printJsonTreeTask = new PrintJsonTreeTask(componentNode);
+        PrintTreeTask printJsonTreeTask = new PrintTreeTask(componentNode);
         Future<String> futureResult;
         String result;
         try {
             futureResult = getExecutorService().submit(printJsonTreeTask);
-            result = futureResult.get(200, TimeUnit.MILLISECONDS);
+            result = futureResult.get(1, TimeUnit.MINUTES);
         } catch (Exception e){
             throw new ServerException("Unexpected server error");
         }

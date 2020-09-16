@@ -9,7 +9,7 @@ import com.mbor.converterservice.components.NodeList;
 import com.mbor.converterservice.components.ValueObject.AbstractValueObject;
 import com.mbor.converterservice.converters.abstractconverter.AbstractConverter;
 import com.mbor.converterservice.converters.abstractconverter.InputExtractionResult;
-import com.mbor.converterservice.converters.abstractconverter.PrintXmlTreeTask;
+import com.mbor.converterservice.converters.abstractconverter.PrintTreeTask;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlEmptyValueObject;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlNullValueObject;
 import com.mbor.converterservice.converters.abstractconverter.json2xml.valueobjects.XmlValueObject;
@@ -40,12 +40,12 @@ public class Json2XmlConverter extends AbstractConverter<JsonInputExtractionResu
     }
 
     private String print(ComponentNode componentNode) {
-        PrintXmlTreeTask printXmlTreeTask = new PrintXmlTreeTask(componentNode);
+        PrintTreeTask printXmlTreeTask = new PrintTreeTask(componentNode);
         Future<String> futureResult;
         String result;
         try {
             futureResult = getExecutorService().submit(printXmlTreeTask);
-            result = futureResult.get(200, TimeUnit.MILLISECONDS);
+            result = futureResult.get(1, TimeUnit.MINUTES);
         } catch (Exception e){
             throw new ServerException("Unexpected server error");
         }

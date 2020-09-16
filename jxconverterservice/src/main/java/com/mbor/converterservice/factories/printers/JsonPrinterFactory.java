@@ -1,6 +1,6 @@
 package com.mbor.converterservice.factories.printers;
 
-import com.mbor.converterservice.components.Printer;
+import com.mbor.converterservice.components.IIndentationPrinter;
 import com.mbor.converterservice.printers.json.JsonComponentNodeWithNodeListPrinter;
 import com.mbor.converterservice.printers.json.JsonComponentNodeWithNodePrinter;
 import com.mbor.converterservice.printers.json.equallist.JsonEqualNodeListPrinter;
@@ -15,60 +15,60 @@ import com.mbor.converterservice.printers.json.nodelist.JsonNodeListWithAttribut
 public class JsonPrinterFactory extends AbstractPrinterFactory {
 
     @Override
-    public Printer getComponentNodeWithNodePrinter() {
+    public IIndentationPrinter getComponentNodeWithNodePrinter() {
         return new JsonComponentNodeWithNodePrinter();
     }
 
     @Override
-    public Printer getComponentNodeWithNodeListPrinter() {
+    public IIndentationPrinter getComponentNodeWithNodeListPrinter() {
         return new JsonComponentNodeWithNodeListPrinter();
     }
 
     @Override
-    public Printer getNodeWithNoValuePrinter() {
+    public IIndentationPrinter getNodeWithNoValuePrinter() {
         return null;
     }
 
     @Override
-    public Printer getNodePrinter(){
+    public IIndentationPrinter getNodePrinter(){
         return new JsonNodePrinter();
     }
 
     @Override
-    public Printer getNodeWithValuePrinter() {
+    public IIndentationPrinter getNodeWithValuePrinter() {
         return new JsonNodePrinter();
     }
 
     @Override
-    public Printer getNodeListPrinter() {
+    public IIndentationPrinter getNodeListPrinter() {
         return new JsonNodeListPrinter();
     }
 
     @Override
-    public Printer getNodeListWithAttributesPrinter() {
+    public IIndentationPrinter getNodeListWithAttributesPrinter() {
         return new JsonNodeListWithAttributesPrinter();
     }
 
     @Override
-    public Printer getNodeEqualListPrinter() {
+    public IIndentationPrinter getNodeEqualListPrinter() {
         return new JsonEqualNodeListPrinter();
     }
 
     @Override
-    public Printer getNodeWithAttributesPrinter() {
+    public IIndentationPrinter getNodeWithAttributesPrinter() {
         return new JsonNodeWithAttributesPrinter();
     }
 
     @Override
-    public Printer getNodeInEqualListPrinter() {
+    public IIndentationPrinter getNodeInEqualListPrinter() {
         return new JsonNodeInEqualListPrinter();
     }
 
     @Override
-    public Printer getNodeWithAttributesInEqualListPrinter(){return new JsonNodeWithAttributesInEqualListPrinter();}
+    public IIndentationPrinter getNodeWithAttributesInEqualListPrinter(){return new JsonNodeWithAttributesInEqualListPrinter();}
 
     @Override
-    public Printer getEqualNodeListWithAttributesPrinter() {
+    public IIndentationPrinter getEqualNodeListWithAttributesPrinter() {
         return new JsonEqualNodeListWithAttributesPrinter();
     }
 }
