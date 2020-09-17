@@ -6,8 +6,9 @@ Major purpose of this project was to build non-trivial application from scratch,
 Server
 On server side, project uses Java with Spring Boot. ConverterService is written in plain Java, and uses Jackson and jUnit.
 Weblayer is built with Spring Boot.
-On client side, there is single website, built with React library.
-As building tool, Maven is used.
+On client side, there is single website, built with React library. [Client App](https://github.com/misiek001/JxConverterClient)
+
+As a building tool, Maven is used.
 
 # Philosophy
 Converting from one format to another is based on two main steps:
