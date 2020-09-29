@@ -3,7 +3,6 @@ package com.mbor.converterservice.printers.json.nodelist;
 import com.mbor.converterservice.components.AbstractNode;
 import com.mbor.converterservice.components.IndentationPrinter;
 import com.mbor.converterservice.components.NodeList;
-import com.mbor.converterservice.converters.abstractconverter.xml2json.Xml2JsonConverter;
 import com.mbor.converterservice.utils.CommonUtils;
 
 import java.util.Iterator;
