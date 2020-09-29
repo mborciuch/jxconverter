@@ -22,12 +22,13 @@ public class ConverterController {
         this.xml2jsonConverter = xml2jsonConverter;
     }
 
+    //TODO Refactor
     @PostMapping(params = "conversionType=toJson",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<OutputValue> convertXmlToJson(@RequestBody InputValue inputValue){
         String result = xml2jsonConverter.convert(inputValue.getValue());
-        result = result.replaceAll(" ","" ).replaceAll("\\n", "");
+        result = addQuotationMarks(result.replaceAll("\\n",  "\\\\n").replaceAll("\"", "\\\\\""));
         OutputValue outputValue = OutputValue.outputValueBuilder()
                 .setValue(result)
                 .build();
@@ -39,7 +40,7 @@ public class ConverterController {
     )
     public ResponseEntity<OutputValue> convertJsonToXml(@RequestBody InputValue inputValue){
         String result = json2xmlConverter.convert(inputValue.getValue());
-        result = addQuotationMarks(result);
+        result = addQuotationMarks(result).replaceAll("\\n",  "\\\\n");
         OutputValue outputValue = OutputValue.outputValueBuilder()
                 .setValue(result)
                 .build();
